@@ -52,7 +52,7 @@ contract BaseConversion {
     }
 
     // Convert an hexadecimal character to their value
-    function fromHexChar(uint8 c) public pure returns (uint8) {
+    function fromHexChar(uint8 c) public pure returns (uint8 cInt) {
         if (bytes1(c) >= bytes1("0") && bytes1(c) <= bytes1("9")) {
             return c - uint8(bytes1("0"));
         }
