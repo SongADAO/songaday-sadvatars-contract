@@ -33,10 +33,10 @@ contract SongADayPFPBuilder is
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
-        string memory baseTokenURIIPFSPrefix
+        bytes4 baseTokenURIPrefix
     ) ERC721(name, symbol) {
         _baseTokenURI = baseTokenURI;
-        _baseTokenURIIPFSPrefix = baseTokenURIIPFSPrefix;
+        _baseTokenURIPrefix = baseTokenURIPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
@@ -107,7 +107,10 @@ contract SongADayPFPBuilder is
         return super.supportsInterface(interfaceId);
     }
 
-    function setMaxPerWallet(uint256 maxPerWallet) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setMaxPerWallet(uint256 maxPerWallet)
+        public
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
         _maxPerWallet = maxPerWallet;
     }
 

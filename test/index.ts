@@ -28,7 +28,8 @@ describe("SongADayPFP", function () {
 
   const baseTokenURI: string = "ipfs://b";
 
-  const baseTokenURIIPFSPrefix: string = "01551220";
+  const baseTokenURIPrefix: string = "0x01551220";
+  // const baseTokenURIPrefix: string = "0x0155122000000000000000000000000000000000000000000000000000000000";
 
   const mints: any[] = [
     {
@@ -196,7 +197,7 @@ describe("SongADayPFP", function () {
       tokenName,
       tokenSymbol,
       baseTokenURI,
-      baseTokenURIIPFSPrefix
+      baseTokenURIPrefix
     );
 
     [owner, bob, jane, sara] = await ethers.getSigners();

@@ -19,7 +19,7 @@ async function main() {
     process.env.TOKEN_NAME || "",
     process.env.TOKEN_SYMBOL || "",
     process.env.TOKEN_BASE_URI || "",
-    process.env.TOKEN_BASE_URI_IPFS_PREFIX || ""
+    process.env.TOKEN_BASE_URI_PREFIX || ""
   );
 
   await token.deployed();
