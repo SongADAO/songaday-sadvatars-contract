@@ -32,9 +32,11 @@ contract SongADayPFPBuilder is
     constructor(
         string memory name,
         string memory symbol,
-        string memory baseTokenURI
+        string memory baseTokenURI,
+        string memory baseTokenURIIPFSPrefix
     ) ERC721(name, symbol) {
         _baseTokenURI = baseTokenURI;
+        _baseTokenURIIPFSPrefix = baseTokenURIIPFSPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);

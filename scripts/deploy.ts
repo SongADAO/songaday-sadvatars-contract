@@ -18,7 +18,8 @@ async function main() {
   const token = await contract.deploy(
     process.env.TOKEN_NAME || "",
     process.env.TOKEN_SYMBOL || "",
-    process.env.TOKEN_BASE_URI || ""
+    process.env.TOKEN_BASE_URI || "",
+    process.env.TOKEN_BASE_URI_IPFS_PREFIX || ""
   );
 
   await token.deployed();

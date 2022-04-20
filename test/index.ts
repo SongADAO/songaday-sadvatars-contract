@@ -26,7 +26,9 @@ describe("SongADayPFP", function () {
 
   const tokenSymbol: string = "SONGADAYPFP";
 
-  const baseTokenURI: string = "ipfs://f01551220";
+  const baseTokenURI: string = "ipfs://b";
+
+  const baseTokenURIIPFSPrefix: string = "01551220";
 
   const mints: any[] = [
     {
@@ -34,7 +36,8 @@ describe("SongADayPFP", function () {
       ipfsHashBase16:
         "f015512206f0b9c69c458c67dac691aa995ac247b4200d2ffe8dd86088ab7b6099a640f65",
       tokenURI:
-        "6f0b9c69c458c67dac691aa995ac247b4200d2ffe8dd86088ab7b6099a640f65",
+        // "6f0b9c69c458c67dac691aa995ac247b4200d2ffe8dd86088ab7b6099a640f65",
+        "afkreidpboogtrcyyz62y2i2vgk2yjd3iianf77i3wdarcvxwyezuzapmu",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010101",
       tokenAttributeDecimal: 282578800148737,
@@ -46,7 +49,8 @@ describe("SongADayPFP", function () {
       ipfsHashBase16:
         "f01551220b91e3a6c67cf132ce21b87a06afc8637dc15779523cd3744daeb0d34e6f04c39",
       tokenURI:
-        "b91e3a6c67cf132ce21b87a06afc8637dc15779523cd3744daeb0d34e6f04c39",
+        // "b91e3a6c67cf132ce21b87a06afc8637dc15779523cd3744daeb0d34e6f04c39",
+        "afkreifzdy5gyz6pcmwoeg4hubvpzbrx3qkxpfjdzu3ujwxlbu2on4cmhe",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010f06",
       tokenAttributeDecimal: 282578800152326,
@@ -58,14 +62,57 @@ describe("SongADayPFP", function () {
       ipfsHashBase16:
         "f01551220b259be1f700989ca7ffb7ed702f921a778770e89cc20a30e98d3528429e6a486",
       tokenURI:
-        "b259be1f700989ca7ffb7ed702f921a778770e89cc20a30e98d3528429e6a486",
+        // "b259be1f700989ca7ffb7ed702f921a778770e89cc20a30e98d3528429e6a486",
+        "afkreifslg7b64ajrhfh763624bpsinhpb3q5comecrq5ggtkkcctzveqy",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010f02",
       tokenAttributeDecimal: 282578800152322,
       tokenURIAndAttributeHash:
         "0x2f7b8c092e2877ac58f84a242a3c6e79d9ab413a888c4753223fb1572e532fdc",
     },
+    // {
+    //   ipfsHash: "bafkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri",
+    //   ipfsHashBase16:
+    //     "f01551220fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a",
+    //   tokenURI: "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri",
+    //   tokenAttribute:
+    //     "0x0000000000000000000000000000000000000000000000000001010101010f02",
+    //   tokenAttributeDecimal: 282578800152322,
+    //   tokenURIAndAttributeHash:
+    //     "0x2f7b8c092e2877ac58f84a242a3c6e79d9ab413a888c4753223fb1572e532fdc",
+    // },
   ];
+
+  // it("base test", async function () {
+  //   const b32 = "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri";
+
+  //   const b16 =
+  //     "01551220fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a";
+  //     // "fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a";
+  //   console.log(b16);
+
+  //   const b16Bytes = hexToBytes(b16);
+  //   console.log(b16Bytes);
+
+  //   const b32Encoded = base32.encode(b16Bytes);
+  //   console.log(b32Encoded.toLowerCase());
+  // });
+
+  // it("correctly assigns metadata URI to NFT", async function () {
+  //   await mint(bob, mints[0]);
+
+  //   expect(await token.tokenURI(0)).to.equal(
+  //     `${baseTokenURI}${mints[0].tokenURI}`
+  //   );
+  // });
+
+  // function hexToBytes(hex: string) {
+  //   for (var bytes = [], c = 0; c < hex.length; c += 2) {
+  //     bytes.push(parseInt(hex.substr(c, 2), 16));
+  //   }
+
+  //   return bytes;
+  // }
 
   // function toHexString(byteArray: any) {
   //   return Array.from(byteArray, (byte: any) => {
@@ -145,7 +192,12 @@ describe("SongADayPFP", function () {
 
   beforeEach(async () => {
     const contract = await ethers.getContractFactory(contractName);
-    token = await contract.deploy(tokenName, tokenSymbol, baseTokenURI);
+    token = await contract.deploy(
+      tokenName,
+      tokenSymbol,
+      baseTokenURI,
+      baseTokenURIIPFSPrefix
+    );
 
     [owner, bob, jane, sara] = await ethers.getSigners();
 
