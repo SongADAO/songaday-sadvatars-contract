@@ -144,6 +144,6 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         view
         returns (string memory decodedTokenURI)
     {
-        return combineURISegments(_baseTokenURIPrefix, _tokenURI);
+        return combineURISegments(_baseURIPrefix(), _tokenURI);
     }
 }
