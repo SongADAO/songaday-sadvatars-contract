@@ -109,6 +109,7 @@ contract SongADayPFPBuilder is
 
     function setMaxPerWallet(uint256 maxPerWallet)
         public
+        virtual
         onlyRole(DEFAULT_ADMIN_ROLE)
     {
         _maxPerWallet = maxPerWallet;
