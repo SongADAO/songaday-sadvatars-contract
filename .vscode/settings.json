@@ -1,0 +1,5 @@
+{
+  "editor.formatOnSave": true,
+  "solidity.linter": "solhint",
+  "solidity.formatter": "prettier"
+}
