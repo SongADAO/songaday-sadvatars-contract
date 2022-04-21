@@ -42,10 +42,6 @@ contract SongADayPFPBuilder is
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
-    }
-
     function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
@@ -70,41 +66,6 @@ contract SongADayPFPBuilder is
             inputTokenAttribute,
             signature
         );
-    }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
-    // The following functions are overrides required by Solidity.
-
-    // function _burn(uint256 tokenId)
-    //     internal
-    //     override(ERC721, CustomAttributeAndURI)
-    // {
-    //     super._burn(tokenId);
-    // }
-
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(ERC721, CustomAttributeAndURI)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(ERC721, ERC721Enumerable, AccessControl)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
     }
 
     function setMaxPerWallet(uint256 maxPerWallet)
@@ -132,6 +93,39 @@ contract SongADayPFPBuilder is
         );
     }
 
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(ERC721, CustomAttributeAndURI)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(ERC721, ERC721Enumerable, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    // function _burn(uint256 tokenId)
+    //     internal
+    //     override(ERC721, CustomAttributeAndURI)
+    // {
+    //     super._burn(tokenId);
+    // }
+
     function _setTokenURIAndAttribute(
         uint256 tokenId,
         bytes32 inputTokenURI,
@@ -151,5 +145,9 @@ contract SongADayPFPBuilder is
 
         _setTokenURI(tokenId, inputTokenURI);
         _setTokenAttribute(tokenId, inputTokenAttribute);
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
     }
 }
