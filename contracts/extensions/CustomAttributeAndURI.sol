@@ -22,10 +22,6 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
     // Inverses the map of token ids to attributes
     mapping(bytes32 => uint256) private _tokenAttributesToTokenIds;
 
-    function _baseURIPrefix() internal view virtual returns (bytes4) {
-        return _baseTokenURIPrefix;
-    }
-
     function tokenURI(uint256 tokenId)
         public
         view
@@ -35,11 +31,11 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
     {
         require(_exists(tokenId), "URI query on nonexistent token");
 
-        bytes32 _tokenURI = _tokenURIs[tokenId];
+        bytes32 thisTokenURI = _tokenURIs[tokenId];
         string memory base = _baseURI();
 
-        if (_tokenURI.length > 0) {
-            string memory decodedTokenURI = decodeTokenUri(_tokenURI);
+        if (thisTokenURI.length > 0) {
+            string memory decodedTokenURI = _decodeTokenUri(thisTokenURI);
 
             // If both are set, concatenate the baseURI and tokenURI (via abi.encodePacked).
             if (bytes(base).length > 0) {
@@ -64,46 +60,59 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         return _tokenAttributes[tokenId];
     }
 
-    function tokenAttributeTokenId(bytes32 _tokenAttribute)
+    function tokenAttributeTokenId(bytes32 inputTokenAttribute)
         public
         view
         virtual
         returns (uint256)
     {
         require(
-            tokenAttributeExists(_tokenAttribute),
+            tokenAttributeExists(inputTokenAttribute),
             "id query on nonexistent attr"
         );
 
-        return _tokenAttributesToTokenIds[_tokenAttribute];
+        return _tokenAttributesToTokenIds[inputTokenAttribute];
     }
 
-    function tokenAttributeExists(bytes32 _tokenAttribute)
+    function tokenAttributeExists(bytes32 inputTokenAttribute)
         public
         view
         virtual
         returns (bool)
     {
         return
-            _tokenAttributes[_tokenAttributesToTokenIds[_tokenAttribute]] ==
-            _tokenAttribute;
+            _tokenAttributes[_tokenAttributesToTokenIds[inputTokenAttribute]] ==
+            inputTokenAttribute;
     }
 
-    function _setTokenURI(uint256 tokenId, bytes32 _tokenURI) internal virtual {
+    function getTokenURIAndAttributeHash(
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute
+    ) public pure virtual returns (bytes32) {
+        return keccak256(abi.encodePacked(inputTokenURI, inputTokenAttribute));
+    }
+
+    function _setTokenURI(uint256 tokenId, bytes32 inputTokenURI)
+        internal
+        virtual
+    {
         require(_exists(tokenId), "URI set on nonexistent token");
-        _tokenURIs[tokenId] = _tokenURI;
+        _tokenURIs[tokenId] = inputTokenURI;
     }
 
-    function _setTokenAttribute(uint256 tokenId, bytes32 _tokenAttribute)
+    function _setTokenAttribute(uint256 tokenId, bytes32 inputTokenAttribute)
         internal
         virtual
     {
         require(_exists(tokenId), "attr set for nonexistent token");
-        require(_tokenAttribute > 0, "attr can't be 0");
-        require(!tokenAttributeExists(_tokenAttribute), "attr already in use");
+        require(inputTokenAttribute > 0, "attr can't be 0");
+        require(
+            !tokenAttributeExists(inputTokenAttribute),
+            "attr already in use"
+        );
 
-        _tokenAttributes[tokenId] = _tokenAttribute;
-        _tokenAttributesToTokenIds[_tokenAttribute] = tokenId;
+        _tokenAttributes[tokenId] = inputTokenAttribute;
+        _tokenAttributesToTokenIds[inputTokenAttribute] = tokenId;
     }
 
     // function _burn(uint256 tokenId) internal virtual override {
@@ -119,31 +128,28 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
     //     }
     // }
 
-    function getTokenURIAndAttributeHash(
-        bytes32 _tokenURI,
-        bytes32 _tokenAttribute
-    ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(_tokenURI, _tokenAttribute));
+    function _baseURIPrefix() internal view virtual returns (bytes4) {
+        return _baseTokenURIPrefix;
     }
 
-    function _getTokenURIAndAttributeHashSigner(
-        bytes32 _tokenURI,
-        bytes32 _tokenAttribute,
-        bytes calldata signature
-    ) internal pure virtual returns (address) {
-        bytes32 message = getTokenURIAndAttributeHash(
-            _tokenURI,
-            _tokenAttribute
-        );
-
-        return message.toEthSignedMessageHash().recover(signature);
-    }
-
-    function decodeTokenUri(bytes32 _tokenURI)
+    function _decodeTokenUri(bytes32 inputTokenURI)
         internal
         view
         returns (string memory decodedTokenURI)
     {
-        return combineURISegments(_baseURIPrefix(), _tokenURI);
+        return _combineURISegments(_baseURIPrefix(), inputTokenURI);
+    }
+
+    function _getTokenURIAndAttributeHashSigner(
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute,
+        bytes calldata signature
+    ) internal pure virtual returns (address) {
+        bytes32 message = getTokenURIAndAttributeHash(
+            inputTokenURI,
+            inputTokenAttribute
+        );
+
+        return message.toEthSignedMessageHash().recover(signature);
     }
 }

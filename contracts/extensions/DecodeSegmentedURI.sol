@@ -6,6 +6,21 @@ pragma solidity ^0.8.9;
  */
 /// @custom:security-contact alanparty@protonmail.com
 contract DecodeSegmentedURI {
+    function _combineURISegments(bytes4 segment1, bytes32 segment2)
+        internal
+        pure
+        returns (string memory combinedTokenURI)
+    {
+        bytes memory combinedBytes = abi.encodePacked(segment1, segment2);
+
+        (bytes30 digest1, bytes30 digest2) = _bytesToTwoBytes30(combinedBytes);
+
+        bytes memory string1 = _bytes30ToString(digest1, 48);
+        bytes memory string2 = _bytes30ToString(digest2, 10);
+
+        return string(bytes.concat(string1, string2));
+    }
+
     function _get5BitsAsUint(bytes30 input, uint8 position)
         private
         pure
@@ -20,12 +35,12 @@ contract DecodeSegmentedURI {
         return uint8(uint240((temp)));
     }
 
-    function _uintToChar(uint8 _conv) private pure returns (bytes1) {
-        if (_conv < 26) {
-            return bytes1(_conv + 97);
+    function _uintToChar(uint8 conv) private pure returns (bytes1) {
+        if (conv < 26) {
+            return bytes1(conv + 97);
         }
 
-        return bytes1(_conv + 24);
+        return bytes1(conv + 24);
     }
 
     function _bytes30ToString(bytes30 input, uint8 length)
@@ -65,20 +80,5 @@ contract DecodeSegmentedURI {
         }
 
         return (bytes30(digest1Bytes), bytes30(digest2Bytes));
-    }
-
-    function combineURISegments(bytes4 segment1, bytes32 segment2)
-        internal
-        pure
-        returns (string memory combinedTokenURI)
-    {
-        bytes memory combinedBytes = abi.encodePacked(segment1, segment2);
-
-        (bytes30 digest1, bytes30 digest2) = _bytesToTwoBytes30(combinedBytes);
-
-        bytes memory string1 = _bytes30ToString(digest1, 48);
-        bytes memory string2 = _bytes30ToString(digest2, 10);
-
-        return string(bytes.concat(string1, string2));
     }
 }

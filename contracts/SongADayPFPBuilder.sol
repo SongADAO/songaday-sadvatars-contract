@@ -56,8 +56,8 @@ contract SongADayPFPBuilder is
 
     function safeMint(
         address to,
-        bytes32 _tokenURI,
-        bytes32 _tokenAttribute,
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute,
         bytes calldata signature
     ) public virtual whenNotPaused {
         require(balanceOf(to) < _maxPerWallet, "has reached per wallet limit");
@@ -66,8 +66,8 @@ contract SongADayPFPBuilder is
         _safeMint(to, tokenId);
         _setTokenURIAndAttribute(
             tokenId,
-            _tokenURI,
-            _tokenAttribute,
+            inputTokenURI,
+            inputTokenAttribute,
             signature
         );
     }
@@ -116,8 +116,8 @@ contract SongADayPFPBuilder is
 
     function changeTokenURIAndAttribute(
         uint256 tokenId,
-        bytes32 _tokenURI,
-        bytes32 _tokenAttribute,
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute,
         bytes calldata signature
     ) public virtual whenNotPaused {
         require(_exists(tokenId), "URI set of nonexistent token");
@@ -125,21 +125,21 @@ contract SongADayPFPBuilder is
 
         _setTokenURIAndAttribute(
             tokenId,
-            _tokenURI,
-            _tokenAttribute,
+            inputTokenURI,
+            inputTokenAttribute,
             signature
         );
     }
 
     function _setTokenURIAndAttribute(
         uint256 tokenId,
-        bytes32 _tokenURI,
-        bytes32 _tokenAttribute,
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute,
         bytes calldata signature
     ) internal virtual {
         address signer = _getTokenURIAndAttributeHashSigner(
-            _tokenURI,
-            _tokenAttribute,
+            inputTokenURI,
+            inputTokenAttribute,
             signature
         );
 
@@ -148,7 +148,7 @@ contract SongADayPFPBuilder is
             "URI must be signed by mint role"
         );
 
-        _setTokenURI(tokenId, _tokenURI);
-        _setTokenAttribute(tokenId, _tokenAttribute);
+        _setTokenURI(tokenId, inputTokenURI);
+        _setTokenAttribute(tokenId, inputTokenAttribute);
     }
 }
