@@ -8,6 +8,7 @@
     "modifier-name-mixedcase": "warn",
     "private-vars-leading-underscore": ["warn", { "strict": true }],
     "func-order": "warn",
-    "ordering": "warn"
+    "ordering": "warn",
+    "mark-callable-contracts": "off"
   }
 }
