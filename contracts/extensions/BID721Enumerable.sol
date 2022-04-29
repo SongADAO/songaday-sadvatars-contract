@@ -2,9 +2,9 @@
 pragma solidity ^0.8.11;
 
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
-import "../BrightIDSoulbound.sol";
+import "../BID721.sol";
 
-abstract contract BrightIDSoulboundEnumerable is BrightIDSoulbound {
+abstract contract BID721Enumerable is BID721 {
     // Mapping from owner to list of owned token IDs
     mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
 
@@ -20,15 +20,31 @@ abstract contract BrightIDSoulboundEnumerable is BrightIDSoulbound {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        virtual
+        override
+        returns (bool)
+    {
+        return
+            interfaceId == type(IERC721Enumerable).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
      * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
      */
-    function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
-        require(index < BrightIDSoulbound.balanceOf(owner), "BrightIDSoulboundEnumerable: owner index out of bounds");
+    function tokenOfOwnerByIndex(address owner, uint256 index)
+        public
+        view
+        virtual
+        returns (uint256)
+    {
+        require(
+            index < BID721.balanceOf(owner),
+            "BID721Enumerable: owner index out of bounds"
+        );
         return _ownedTokens[owner][index];
     }
 
@@ -44,8 +60,8 @@ abstract contract BrightIDSoulboundEnumerable is BrightIDSoulbound {
      */
     function tokenByIndex(uint256 index) public view virtual returns (uint256) {
         require(
-            index < BrightIDSoulboundEnumerable.totalSupply(),
-            "BrightIDSoulboundEnumerable: global index out of bounds"
+            index < BID721Enumerable.totalSupply(),
+            "BID721Enumerable: global index out of bounds"
         );
         return _allTokens[index];
     }
@@ -90,7 +106,7 @@ abstract contract BrightIDSoulboundEnumerable is BrightIDSoulbound {
      * @param tokenId uint256 ID of the token to be added to the tokens list of the given address
      */
     function _addTokenToOwnerEnumeration(address to, uint256 tokenId) private {
-        uint256 length = BrightIDSoulbound.balanceOf(to);
+        uint256 length = BID721.balanceOf(to);
         _ownedTokens[to][length] = tokenId;
         _ownedTokensIndex[tokenId] = length;
     }
@@ -112,11 +128,13 @@ abstract contract BrightIDSoulboundEnumerable is BrightIDSoulbound {
      * @param from address representing the previous owner of the given token ID
      * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
      */
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId)
+        private
+    {
         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
         // then delete the last slot (swap and pop).
 
-        uint256 lastTokenIndex = BrightIDSoulbound.balanceOf(from) - 1;
+        uint256 lastTokenIndex = BID721.balanceOf(from) - 1;
         uint256 tokenIndex = _ownedTokensIndex[tokenId];
 
         // When the token to delete is the last token, the swap operation is unnecessary
