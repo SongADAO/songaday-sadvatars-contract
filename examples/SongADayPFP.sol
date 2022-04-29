@@ -31,7 +31,7 @@ contract SongADayPFP is
     }
 
     function _baseURI() internal pure override returns (string memory) {
-        return "ipfs://";
+        return "ipfs://b";
     }
 
     function pause() public onlyRole(PAUSER_ROLE) {
