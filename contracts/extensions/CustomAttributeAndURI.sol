@@ -1,14 +1,15 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "../BID721/BID721.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./DecodeSegmentedURI.sol";
 
 import "hardhat/console.sol";
 
 /// @custom:security-contact alanparty@protonmail.com
-abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
+abstract contract CustomAttributeAndURI is BID721, DecodeSegmentedURI {
     using ECDSA for bytes32;
 
     bytes4 internal _baseTokenURIPrefix;

@@ -9,7 +9,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "./brightid/extensions/BrightIDValidatorOwnership.sol";
+import "../brightid/extensions/BrightIDValidatorOwnership.sol";
 
 contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
     using Address for address;

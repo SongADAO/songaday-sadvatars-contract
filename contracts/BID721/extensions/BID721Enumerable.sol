@@ -1,10 +1,17 @@
 // SPDX-License-Identifier: MIT
+// OpenZeppelin Contracts v4.4.1 (token/ERC721/extensions/ERC721Enumerable.sol)
+
 pragma solidity ^0.8.11;
 
-import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "../BID721.sol";
+import "./IBID721Enumerable.sol";
 
-abstract contract BID721Enumerable is BID721 {
+/**
+ * @dev This implements an optional extension of {ERC721} defined in the EIP that adds
+ * enumerability of all the token ids in the contract as well as all token ids owned by each
+ * account.
+ */
+abstract contract BID721Enumerable is BID721, IBID721Enumerable {
     // Mapping from owner to list of owned token IDs
     mapping(address => mapping(uint256 => uint256)) private _ownedTokens;
 
@@ -20,31 +27,15 @@ abstract contract BID721Enumerable is BID721 {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override
-        returns (bool)
-    {
-        return
-            interfaceId == type(IERC721Enumerable).interfaceId ||
-            super.supportsInterface(interfaceId);
+    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+        return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
     }
 
     /**
      * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
      */
-    function tokenOfOwnerByIndex(address owner, uint256 index)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
-        require(
-            index < BID721.balanceOf(owner),
-            "BID721Enumerable: owner index out of bounds"
-        );
+    function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
+        require(index < BID721.balanceOf(owner), "BID721Enumerable: owner index out of bounds");
         return _ownedTokens[owner][index];
     }
 
@@ -59,10 +50,7 @@ abstract contract BID721Enumerable is BID721 {
      * @dev See {IERC721Enumerable-tokenByIndex}.
      */
     function tokenByIndex(uint256 index) public view virtual returns (uint256) {
-        require(
-            index < BID721Enumerable.totalSupply(),
-            "BID721Enumerable: global index out of bounds"
-        );
+        require(index < BID721Enumerable.totalSupply(), "BID721Enumerable: global index out of bounds");
         return _allTokens[index];
     }
 
@@ -128,9 +116,7 @@ abstract contract BID721Enumerable is BID721 {
      * @param from address representing the previous owner of the given token ID
      * @param tokenId uint256 ID of the token to be removed from the tokens list of the given address
      */
-    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId)
-        private
-    {
+    function _removeTokenFromOwnerEnumeration(address from, uint256 tokenId) private {
         // To prevent a gap in from's tokens array, we store the last token in the index of the token to delete, and
         // then delete the last slot (swap and pop).
 

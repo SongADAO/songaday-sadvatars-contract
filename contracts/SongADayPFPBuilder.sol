@@ -1,22 +1,22 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./BID721.sol";
+import "./extensions/BID721Enumerable.sol";
+// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+// import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 
 import "./extensions/CustomAttributeAndURI.sol";
 
 /// @custom:security-contact alanparty@protonmail.com
 contract SongADayPFPBuilder is
-    ERC721,
-    ERC721Enumerable,
+    BID721,
+    BID721Enumerable,
     Pausable,
     AccessControl,
-    ERC721Burnable,
     CustomAttributeAndURI
 {
     using Counters for Counters.Counter;
@@ -30,11 +30,13 @@ contract SongADayPFPBuilder is
     uint256 private _maxPerWallet = 2**256 - 1;
 
     constructor(
+        address verifier,
+        bytes32 context,
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
         bytes4 baseTokenURIPrefix
-    ) ERC721(name, symbol) {
+    ) BID721(verifier, context, name, symbol) {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -96,7 +98,7 @@ contract SongADayPFPBuilder is
     function tokenURI(uint256 tokenId)
         public
         view
-        override(ERC721, CustomAttributeAndURI)
+        override(BID721, CustomAttributeAndURI)
         returns (string memory)
     {
         return super.tokenURI(tokenId);
@@ -105,7 +107,7 @@ contract SongADayPFPBuilder is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(ERC721, ERC721Enumerable, AccessControl)
+        override(BID721, BID721Enumerable, AccessControl)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
@@ -115,16 +117,9 @@ contract SongADayPFPBuilder is
         address from,
         address to,
         uint256 tokenId
-    ) internal override(ERC721, ERC721Enumerable) whenNotPaused {
+    ) internal override(BID721, BID721Enumerable) whenNotPaused {
         super._beforeTokenTransfer(from, to, tokenId);
     }
-
-    // function _burn(uint256 tokenId)
-    //     internal
-    //     override(ERC721, CustomAttributeAndURI)
-    // {
-    //     super._burn(tokenId);
-    // }
 
     function _setTokenURIAndAttribute(
         uint256 tokenId,
