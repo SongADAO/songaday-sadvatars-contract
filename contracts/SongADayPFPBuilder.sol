@@ -13,10 +13,10 @@ import "./extensions/CustomAttributeAndURI.sol";
 
 /// @custom:security-contact alanparty@protonmail.com
 contract SongADayPFPBuilder is
+    AccessControl,
     BID721,
     BID721Enumerable,
     Pausable,
-    AccessControl,
     CustomAttributeAndURI
 {
     using Counters for Counters.Counter;
@@ -107,7 +107,7 @@ contract SongADayPFPBuilder is
     function supportsInterface(bytes4 interfaceId)
         public
         view
-        override(BID721, BID721Enumerable, AccessControl)
+        override(AccessControl, BID721, BID721Enumerable)
         returns (bool)
     {
         return super.supportsInterface(interfaceId);
