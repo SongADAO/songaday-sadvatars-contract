@@ -1,17 +1,26 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.11;
+// OpenZeppelin Contracts (last updated v4.6.0) (token/BID721/BID721.sol)
+
+pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/utils/Context.sol";
 import "@openzeppelin/contracts/utils/introspection/ERC165.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
+import "./IBID721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Metadata.sol";
+import "./extensions/IBID721Metadata.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "../brightid/extensions/BrightIDValidatorOwnership.sol";
 
-contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
+/**
+ * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[BID721] Non-Fungible Token Standard, including
+ * the Metadata extension, but not including the Enumerable extension, which is available separately as
+ * {BID721Enumerable}.
+ */
+contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorOwnership {
     using Address for address;
     using Strings for uint256;
 
@@ -39,12 +48,7 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
-    constructor(
-        address verifier,
-        bytes32 context,
-        string memory name_,
-        string memory symbol_
-    ) BrightIDValidatorOwnership(verifier, context) {
+    constructor(address verifier, bytes32 context, string memory name_, string memory symbol_) BrightIDValidatorOwnership(verifier, context) {
         _name = name_;
         _symbol = symbol_;
     }
@@ -52,44 +56,34 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        virtual
-        override(ERC165)
-        returns (bool)
-    {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
         return
+            interfaceId == type(IBID721).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||
+            interfaceId == type(IBID721Metadata).interfaceId ||
             interfaceId == type(IERC721Metadata).interfaceId ||
             super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev See {IERC721-balanceOf}.
+     * @dev See {IBID721-balanceOf}.
      */
     function balanceOf(address owner) public view virtual returns (uint256) {
-        require(
-            owner != address(0),
-            "BID721: balance query for the zero address"
-        );
+        require(owner != address(0), "BID721: balance query for the zero address");
         return _balances[owner];
     }
 
     /**
-     * @dev See {IERC721-ownerOf}.
+     * @dev See {IBID721-ownerOf}.
      */
     function ownerOf(uint256 tokenId) public view virtual returns (address) {
         address owner = _owners[tokenId];
-        require(
-            owner != address(0),
-            "BID721: owner query for nonexistent token"
-        );
+        require(owner != address(0), "BID721: owner query for nonexistent token");
         return owner;
     }
 
     /**
-     * @dev See {IERC721Metadata-name}.
+     * @dev See {IBID721Metadata-name}.
      */
     function name() public view virtual returns (string memory) {
         return _name;
@@ -105,19 +99,11 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
     /**
      * @dev See {IERC721Metadata-tokenURI}.
      */
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (string memory)
-    {
+    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
         require(_exists(tokenId), "BID721: URI query for nonexistent token");
 
         string memory baseURI = _baseURI();
-        return
-            bytes(baseURI).length > 0
-                ? string(abi.encodePacked(baseURI, tokenId.toString()))
-                : "";
+        return bytes(baseURI).length > 0 ? string(abi.encodePacked(baseURI, tokenId.toString())) : "";
     }
 
     /**
@@ -154,10 +140,7 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
         bytes memory _data
     ) internal virtual {
         _transfer(from, to, tokenId);
-        require(
-            _checkOnERC721Received(from, to, tokenId, _data),
-            "BID721: transfer to non ERC721Receiver implementer"
-        );
+        require(_checkOnERC721Received(from, to, tokenId, _data), "BID721: transfer to non ERC721Receiver implementer");
     }
 
     /**
@@ -291,20 +274,11 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
         bytes memory _data
     ) private returns (bool) {
         if (to.isContract()) {
-            try
-                IERC721Receiver(to).onERC721Received(
-                    _msgSender(),
-                    from,
-                    tokenId,
-                    _data
-                )
-            returns (bytes4 retval) {
+            try IERC721Receiver(to).onERC721Received(_msgSender(), from, tokenId, _data) returns (bytes4 retval) {
                 return retval == IERC721Receiver.onERC721Received.selector;
             } catch (bytes memory reason) {
                 if (reason.length == 0) {
-                    revert(
-                        "BID721: transfer to non ERC721Receiver implementer"
-                    );
+                    revert("BID721: transfer to non ERC721Receiver implementer");
                 } else {
                     assembly {
                         revert(add(32, reason), mload(reason))
@@ -344,11 +318,10 @@ contract BID721 is Context, ERC165, BrightIDValidatorOwnership {
      * - length of `contextIds` must be greater than 1.
      * - at least one element in `contextIds` resolves to the owner address of token `tokenId`.
      */
-    function _lookup(bytes32[] calldata contextIds, uint256 tokenId)
-        internal
-        view
-        returns (address, address)
-    {
+    function _lookup(
+        bytes32[] calldata contextIds,
+        uint256 tokenId
+    ) internal view returns (address, address) {
         address owner = ownerOf(tokenId);
         for (uint256 i = 1; i < contextIds.length; i++) {
             if (owner == _uuidToAddress[hashUUID(contextIds[i])]) {

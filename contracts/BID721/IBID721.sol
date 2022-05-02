@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.6.0) (token/BID721/IBID721.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
-import "../../utils/introspection/IERC165.sol";
+import "@openzeppelin/contracts/utils/introspection/IERC165.sol";
 
 /**
  * @dev Required interface of an BID721 compliant contract.

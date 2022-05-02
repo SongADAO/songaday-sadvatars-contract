@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 // OpenZeppelin Contracts (last updated v4.5.0) (token/BID721/extensions/IBID721Enumerable.sol)
 
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.9;
 
 import "../IBID721.sol";
 

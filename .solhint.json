@@ -5,7 +5,7 @@
     "func-visibility": ["warn", { "ignoreConstructors": true }],
     "code-complexity": ["warn", 7],
     "function-max-lines": ["warn", 50],
-    "max-line-length": ["error", 120],
+    "max-line-length": ["error", 1120],
     "constructor-syntax": "warn",
     "comprehensive-interface": "off",
     "func-param-name-mixedcase": "warn",

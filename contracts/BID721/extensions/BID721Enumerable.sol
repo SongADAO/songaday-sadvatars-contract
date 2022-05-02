@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
-// OpenZeppelin Contracts v4.4.1 (token/ERC721/extensions/ERC721Enumerable.sol)
+// OpenZeppelin Contracts v4.4.1 (token/BID721/extensions/BID721Enumerable.sol)
 
-pragma solidity ^0.8.11;
+pragma solidity ^0.8.9;
 
 import "../BID721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/IERC721Enumerable.sol";
 import "./IBID721Enumerable.sol";
 
 /**
- * @dev This implements an optional extension of {ERC721} defined in the EIP that adds
+ * @dev This implements an optional extension of {BID721} defined in the EIP that adds
  * enumerability of all the token ids in the contract as well as all token ids owned by each
  * account.
  */
@@ -28,11 +29,14 @@ abstract contract BID721Enumerable is BID721, IBID721Enumerable {
      * @dev See {IERC165-supportsInterface}.
      */
     function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
-        return interfaceId == type(IERC721Enumerable).interfaceId || super.supportsInterface(interfaceId);
+        return
+            interfaceId == type(IBID721Enumerable).interfaceId ||
+            interfaceId == type(IERC721Enumerable).interfaceId ||
+            super.supportsInterface(interfaceId);
     }
 
     /**
-     * @dev See {IERC721Enumerable-tokenOfOwnerByIndex}.
+     * @dev See {IBID721Enumerable-tokenOfOwnerByIndex}.
      */
     function tokenOfOwnerByIndex(address owner, uint256 index) public view virtual returns (uint256) {
         require(index < BID721.balanceOf(owner), "BID721Enumerable: owner index out of bounds");
@@ -40,14 +44,14 @@ abstract contract BID721Enumerable is BID721, IBID721Enumerable {
     }
 
     /**
-     * @dev See {IERC721Enumerable-totalSupply}.
+     * @dev See {IBID721Enumerable-totalSupply}.
      */
     function totalSupply() public view virtual returns (uint256) {
         return _allTokens.length;
     }
 
     /**
-     * @dev See {IERC721Enumerable-tokenByIndex}.
+     * @dev See {IBID721Enumerable-tokenByIndex}.
      */
     function tokenByIndex(uint256 index) public view virtual returns (uint256) {
         require(index < BID721Enumerable.totalSupply(), "BID721Enumerable: global index out of bounds");
