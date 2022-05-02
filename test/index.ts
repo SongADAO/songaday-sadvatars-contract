@@ -20,6 +20,10 @@ describe("SongADayPFP", function () {
 
   const ZeroAddress: string = "0x0000000000000000000000000000000000000000";
 
+  const brightidVerifier: string = "0xb1d71F62bEe34E9Fc349234C201090c33BCdF6DB";
+
+  const brightidContext: string = "0x736f756c626f756e640000000000000000000000000000000000000000000000";
+
   const contractName: string = "SongADayPFPBuilder";
 
   const tokenName: string = "SongADayPFP";
@@ -194,6 +198,8 @@ describe("SongADayPFP", function () {
   beforeEach(async () => {
     const contract = await ethers.getContractFactory(contractName);
     token = await contract.deploy(
+      brightidVerifier,
+      brightidContext,
       tokenName,
       tokenSymbol,
       baseTokenURI,

@@ -16,6 +16,8 @@ async function main() {
   // We get the contract to deploy
   const contract = await ethers.getContractFactory("SongADayPFPBuilder");
   const token = await contract.deploy(
+    process.env.BRIGHTID_VERIFIER || "",
+    process.env.BRIGHTID_CONTEXT || "",
     process.env.TOKEN_NAME || "",
     process.env.TOKEN_SYMBOL || "",
     process.env.TOKEN_BASE_URI || "",
