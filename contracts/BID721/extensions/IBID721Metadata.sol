@@ -6,7 +6,7 @@ pragma solidity ^0.8.9;
 import "../IBID721.sol";
 
 /**
- * @title ERC-721 Non-Fungible Token Standard, optional metadata extension
+ * @title BID-721 Non-Fungible Token Standard, optional metadata extension
  * @dev See https://eips.ethereum.org/EIPS/eip-721
  */
 interface IBID721Metadata is IBID721 {

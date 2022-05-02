@@ -24,15 +24,6 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     using Address for address;
     using Strings for uint256;
 
-    /**
-     * @dev Emitted when `tokenId` token is transferred from `from` to `to`.
-     */
-    event Transfer(
-        address indexed from,
-        address indexed to,
-        uint256 indexed tokenId
-    );
-
     // Token name
     string private _name;
 
@@ -56,7 +47,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165) returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(ERC165, IERC165) returns (bool) {
         return
             interfaceId == type(IBID721).interfaceId ||
             interfaceId == type(IERC721).interfaceId ||

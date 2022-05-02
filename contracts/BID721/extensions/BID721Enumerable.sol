@@ -28,7 +28,7 @@ abstract contract BID721Enumerable is BID721, IBID721Enumerable {
     /**
      * @dev See {IERC165-supportsInterface}.
      */
-    function supportsInterface(bytes4 interfaceId) public view virtual override returns (bool) {
+    function supportsInterface(bytes4 interfaceId) public view virtual override(IERC165, BID721) returns (bool) {
         return
             interfaceId == type(IBID721Enumerable).interfaceId ||
             interfaceId == type(IERC721Enumerable).interfaceId ||
