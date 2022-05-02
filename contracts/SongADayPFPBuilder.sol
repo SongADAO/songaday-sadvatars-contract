@@ -44,6 +44,10 @@ contract SongADayPFPBuilder is
         _grantRole(MINTER_ROLE, msg.sender);
     }
 
+    function _baseURI() internal view virtual override returns (string memory) {
+        return _baseTokenURI;
+    }
+
     function pause() public onlyRole(PAUSER_ROLE) {
         _pause();
     }
@@ -95,32 +99,6 @@ contract SongADayPFPBuilder is
         );
     }
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        override(BID721, CustomAttributeAndURI)
-        returns (string memory)
-    {
-        return super.tokenURI(tokenId);
-    }
-
-    function supportsInterface(bytes4 interfaceId)
-        public
-        view
-        override(AccessControl, BID721, BID721Enumerable)
-        returns (bool)
-    {
-        return super.supportsInterface(interfaceId);
-    }
-
-    function _beforeTokenTransfer(
-        address from,
-        address to,
-        uint256 tokenId
-    ) internal override(BID721, BID721Enumerable) whenNotPaused {
-        super._beforeTokenTransfer(from, to, tokenId);
-    }
-
     function _setTokenURIAndAttribute(
         uint256 tokenId,
         bytes32 inputTokenURI,
@@ -142,7 +120,31 @@ contract SongADayPFPBuilder is
         _setTokenAttribute(tokenId, inputTokenAttribute);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return _baseTokenURI;
+    function _beforeTokenTransfer(
+        address from,
+        address to,
+        uint256 tokenId
+    ) internal override(BID721, BID721Enumerable) whenNotPaused {
+        super._beforeTokenTransfer(from, to, tokenId);
+    }
+
+    // The following functions are overrides required by Solidity.
+
+    function tokenURI(uint256 tokenId)
+        public
+        view
+        override(BID721, CustomAttributeAndURI)
+        returns (string memory)
+    {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId)
+        public
+        view
+        override(BID721, BID721Enumerable, AccessControl)
+        returns (bool)
+    {
+        return super.supportsInterface(interfaceId);
     }
 }
