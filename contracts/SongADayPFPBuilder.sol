@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "./BID721.sol";
-import "./extensions/BID721Enumerable.sol";
 // import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./BID721/BID721.sol";
 // import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
+import "./BID721/extensions/BID721Enumerable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
