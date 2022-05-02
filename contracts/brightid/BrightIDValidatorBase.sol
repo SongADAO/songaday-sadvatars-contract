@@ -28,6 +28,14 @@ abstract contract BrightIDValidatorBase is AccessControl {
         _context = context;
     }
 
+    function getContext() public view virtual returns (bytes32) {
+        return _context;
+    }
+
+    function getVerifier() public view virtual returns (address) {
+        return _verifier;
+    }
+
     /**
      * @dev Set `_context` to `context`.
      *
