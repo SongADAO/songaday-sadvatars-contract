@@ -235,106 +235,95 @@ describe("SongADayPFP", function () {
       expect(await token.ownerOf(1)).to.equal(jane.address);
       expect(await token.ownerOf(2)).to.equal(sara.address);
     });
+  });
 
-    it("correctly grants an approval", async function () {
-      await mint(bob, mints[0]);
+  // ERC721::transferable
+  // ===========================================================================
 
-      expect(await token.connect(bob).approve(sara.address, 0)).to.emit(
-        token,
-        "Approval"
-      );
-      expect(await token.getApproved(0)).to.equal(sara.address);
-    });
-
-    it("correctly revokes an approval", async function () {
-      await mint(bob, mints[0]);
-      await token.connect(bob).approve(sara.address, 0);
-      await token.connect(bob).approve(ZeroAddress, 0);
-
-      expect(await token.getApproved(0)).to.equal(ZeroAddress);
-    });
-
-    it("correctly grants an approval for all", async function () {
-      await mint(bob, mints[0]);
-
-      expect(
-        await token.connect(bob).setApprovalForAll(sara.address, true)
-      ).to.emit(token, "ApproveForAll");
-      expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-        true
-      );
-    });
-
-    it("correct revokes an approval for all", async function () {
-      await mint(bob, mints[0]);
-      await token.connect(bob).setApprovalForAll(sara.address, true);
-      await token.connect(bob).setApprovalForAll(sara.address, false);
-
-      expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-        false
-      );
-    });
-
-    it("correctly approves and transfers a specific NFT", async function () {
-      await mint(bob, mints[0]);
-      await token.connect(bob).approve(sara.address, 0);
-      await token.connect(sara).transferFrom(bob.address, jane.address, 0);
-
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      expect(await token.balanceOf(jane.address)).to.equal(1);
-      expect(await token.ownerOf(0)).to.equal(jane.address);
-    });
-
-    it("correctly approves and transfers multiple NFTs with an approval for all", async function () {
-      await token.connect(bob).setApprovalForAll(sara.address, true);
-      await mint(bob, mints[0]);
-      await token.connect(sara).transferFrom(bob.address, jane.address, 0);
-      await mint(bob, mints[1]);
-      await token.connect(sara).transferFrom(bob.address, jane.address, 1);
-
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      expect(await token.balanceOf(jane.address)).to.equal(2);
-      expect(await token.ownerOf(0)).to.equal(jane.address);
-      expect(await token.ownerOf(1)).to.equal(jane.address);
-    });
-
-    it("correctly approves and safely transfers a specific NFT", async function () {
-      await mint(bob, mints[0]);
-      await token.connect(bob).approve(sara.address, 0);
-      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
-
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      expect(await token.balanceOf(jane.address)).to.equal(1);
-      expect(await token.ownerOf(0)).to.equal(jane.address);
-    });
-
-    it("correctly approves and safely transfers multiple NFTs with an approval for all", async function () {
-      await token.connect(bob).setApprovalForAll(sara.address, true);
-      await mint(bob, mints[0]);
-      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
-      await mint(bob, mints[1]);
-      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 1);
-
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      expect(await token.balanceOf(jane.address)).to.equal(2);
-      expect(await token.ownerOf(0)).to.equal(jane.address);
-      expect(await token.ownerOf(1)).to.equal(jane.address);
-    });
+  describe("ERC721::transferable", function () {
+    // it("correctly grants an approval", async function () {
+    //   await mint(bob, mints[0]);
+    //   expect(await token.connect(bob).approve(sara.address, 0)).to.emit(
+    //     token,
+    //     "Approval"
+    //   );
+    //   expect(await token.getApproved(0)).to.equal(sara.address);
+    // });
+    // it("correctly revokes an approval", async function () {
+    //   await mint(bob, mints[0]);
+    //   await token.connect(bob).approve(sara.address, 0);
+    //   await token.connect(bob).approve(ZeroAddress, 0);
+    //   expect(await token.getApproved(0)).to.equal(ZeroAddress);
+    // });
+    // it("correctly grants an approval for all", async function () {
+    //   await mint(bob, mints[0]);
+    //   expect(
+    //     await token.connect(bob).setApprovalForAll(sara.address, true)
+    //   ).to.emit(token, "ApproveForAll");
+    //   expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
+    //     true
+    //   );
+    // });
+    // it("correct revokes an approval for all", async function () {
+    //   await mint(bob, mints[0]);
+    //   await token.connect(bob).setApprovalForAll(sara.address, true);
+    //   await token.connect(bob).setApprovalForAll(sara.address, false);
+    //   expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
+    //     false
+    //   );
+    // });
+    // it("correctly approves and transfers a specific NFT", async function () {
+    //   await mint(bob, mints[0]);
+    //   await token.connect(bob).approve(sara.address, 0);
+    //   await token.connect(sara).transferFrom(bob.address, jane.address, 0);
+    //   expect(await token.balanceOf(bob.address)).to.equal(0);
+    //   expect(await token.balanceOf(jane.address)).to.equal(1);
+    //   expect(await token.ownerOf(0)).to.equal(jane.address);
+    // });
+    // it("correctly approves and transfers multiple NFTs with an approval for all", async function () {
+    //   await token.connect(bob).setApprovalForAll(sara.address, true);
+    //   await mint(bob, mints[0]);
+    //   await token.connect(sara).transferFrom(bob.address, jane.address, 0);
+    //   await mint(bob, mints[1]);
+    //   await token.connect(sara).transferFrom(bob.address, jane.address, 1);
+    //   expect(await token.balanceOf(bob.address)).to.equal(0);
+    //   expect(await token.balanceOf(jane.address)).to.equal(2);
+    //   expect(await token.ownerOf(0)).to.equal(jane.address);
+    //   expect(await token.ownerOf(1)).to.equal(jane.address);
+    // });
+    // it("correctly approves and safely transfers a specific NFT", async function () {
+    //   await mint(bob, mints[0]);
+    //   await token.connect(bob).approve(sara.address, 0);
+    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
+    //   expect(await token.balanceOf(bob.address)).to.equal(0);
+    //   expect(await token.balanceOf(jane.address)).to.equal(1);
+    //   expect(await token.ownerOf(0)).to.equal(jane.address);
+    // });
+    // it("correctly approves and safely transfers multiple NFTs with an approval for all", async function () {
+    //   await token.connect(bob).setApprovalForAll(sara.address, true);
+    //   await mint(bob, mints[0]);
+    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
+    //   await mint(bob, mints[1]);
+    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 1);
+    //   expect(await token.balanceOf(bob.address)).to.equal(0);
+    //   expect(await token.balanceOf(jane.address)).to.equal(2);
+    //   expect(await token.ownerOf(0)).to.equal(jane.address);
+    //   expect(await token.ownerOf(1)).to.equal(jane.address);
+    // });
   });
 
   // ERC721Burnable
   // ===========================================================================
 
   describe("ERC721Burnable", function () {
-    it("correctly burns a NFT", async function () {
-      await mint(bob, mints[0]);
-
-      expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      await expect(token.ownerOf(0)).to.be.revertedWith(
-        "ERC721: owner query for nonexistent token"
-      );
-    });
+    // it("correctly burns a NFT", async function () {
+    //   await mint(bob, mints[0]);
+    //   expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
+    //   expect(await token.balanceOf(bob.address)).to.equal(0);
+    //   await expect(token.ownerOf(0)).to.be.revertedWith(
+    //     "ERC721: owner query for nonexistent token"
+    //   );
+    // });
   });
 
   // ERC721Metadata
@@ -568,6 +557,48 @@ describe("SongADayPFP", function () {
       await expect(
         changeTokenURIAndAttribute(bob, 0, mints[1])
       ).to.be.revertedWith("Pausable: paused");
+    });
+  });
+
+  // BID721
+  // ===========================================================================
+
+  describe("BID721", function () {
+    it("is correctly rescued", async function () {});
+  });
+
+  // BrightIDValidatorBase
+  // ===========================================================================
+
+  describe("BrightIDValidatorBase", function () {
+    it("can set context", async function () {
+      const testContext =
+        "0x736f756c626f756e640000000000000000000000000f000000000000ab000000";
+      await token.connect(owner).setContext(testContext);
+      expect(await token.getContext()).to.equal(testContext);
+    });
+
+    it("can set verifier", async function () {
+      const testVerifier = bob.address;
+      await token.connect(owner).setVerifier(testVerifier);
+      expect(await token.getVerifier()).to.equal(testVerifier);
+    });
+  });
+
+  // BrightIDValidatorOwnership
+  // ===========================================================================
+
+  describe("BrightIDValidatorOwnership", function () {
+    it("can bind", async function () {
+      // bind(owner, uuidHash, nonce, signature)
+    });
+
+    it("can hash uuid", async function () {
+      // hashUUID(uuid)
+    });
+
+    it("can get uuid hash", async function () {
+      // getUUIDHash(owner, uuidHash, nonce)
     });
   });
 });
