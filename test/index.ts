@@ -592,7 +592,7 @@ describe("SongADayPFP", function () {
   // BrightIDValidatorOwnership
   // ===========================================================================
 
-  describe.only("BrightIDValidatorOwnership", function () {
+  describe("BrightIDValidatorOwnership", function () {
     it("can hash uuid", async function () {
       const testUUIDBytes32: string = strToByte32("this-is-a-test-uuid");
       console.log(testUUIDBytes32);
