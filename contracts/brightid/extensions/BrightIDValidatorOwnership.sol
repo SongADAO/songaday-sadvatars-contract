@@ -50,6 +50,14 @@ contract BrightIDValidatorOwnership is BrightIDValidatorBase {
         emit AddressBound(owner);
     }
 
+    function isBound(
+        address owner,
+        bytes32 uuidHash
+    ) public view returns (bool) {
+        require(owner != address(0), "BrightIDValidatorOwnership: can't check zero address");
+        return _uuidToAddress[uuidHash] == owner;
+    }
+
     /**
      * @dev Returns a hashed UUID
      *
