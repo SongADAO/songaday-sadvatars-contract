@@ -20,7 +20,7 @@ import "../brightid/extensions/BrightIDValidatorOwnership.sol";
  * the Metadata extension, but not including the Enumerable extension, which is available separately as
  * {BID721Enumerable}.
  */
-contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorOwnership {
+abstract contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorOwnership {
     using Address for address;
     using Strings for uint256;
 
