@@ -59,7 +59,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     /**
      * @dev See {IBID721-balanceOf}.
      */
-    function balanceOf(address owner) public view virtual returns (uint256) {
+    function balanceOf(address owner) public view virtual override returns (uint256) {
         require(owner != address(0), "BID721: balance query for the zero address");
         return _balances[owner];
     }
@@ -67,7 +67,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     /**
      * @dev See {IBID721-ownerOf}.
      */
-    function ownerOf(uint256 tokenId) public view virtual returns (address) {
+    function ownerOf(uint256 tokenId) public view virtual override returns (address) {
         address owner = _owners[tokenId];
         require(owner != address(0), "BID721: owner query for nonexistent token");
         return owner;
@@ -76,21 +76,21 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     /**
      * @dev See {IBID721Metadata-name}.
      */
-    function name() public view virtual returns (string memory) {
+    function name() public view virtual override returns (string memory) {
         return _name;
     }
 
     /**
-     * @dev See {IERC721Metadata-symbol}.
+     * @dev See {IBID721Metadata-symbol}.
      */
-    function symbol() public view virtual returns (string memory) {
+    function symbol() public view virtual override returns (string memory) {
         return _symbol;
     }
 
     /**
-     * @dev See {IERC721Metadata-tokenURI}.
+     * @dev See {IBID721Metadata-tokenURI}.
      */
-    function tokenURI(uint256 tokenId) public view virtual returns (string memory) {
+    function tokenURI(uint256 tokenId) public view virtual override returns (string memory) {
         require(_exists(tokenId), "BID721: URI query for nonexistent token");
 
         string memory baseURI = _baseURI();
