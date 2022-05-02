@@ -595,7 +595,7 @@ describe("SongADayPFP", function () {
   describe("BrightIDValidatorOwnership", function () {
     it("can hash uuid", async function () {
       const testUUIDBytes32: string = strToByte32("this-is-a-test-uuid");
-      console.log(testUUIDBytes32);
+      // console.log(testUUIDBytes32);
 
       expect(await token.hashUUID(testUUIDBytes32)).to.equal(
         "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68"
