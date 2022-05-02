@@ -156,6 +156,10 @@ describe("SongADayPFP", function () {
     return ipfsHashBase16Bytes32;
   }
 
+  function strToByte32(str: string) {
+    return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
+  }
+
   async function mint(minter: any, params: any) {
     const signature: string = await owner.signMessage(
       ethers.utils.arrayify(params.tokenURIAndAttributeHash)
@@ -588,17 +592,52 @@ describe("SongADayPFP", function () {
   // BrightIDValidatorOwnership
   // ===========================================================================
 
-  describe("BrightIDValidatorOwnership", function () {
-    it("can bind", async function () {
-      // bind(owner, uuidHash, nonce, signature)
-    });
-
+  describe.only("BrightIDValidatorOwnership", function () {
     it("can hash uuid", async function () {
-      // hashUUID(uuid)
+      const testUUIDBytes32: string = strToByte32("this-is-a-test-uuid");
+      console.log(testUUIDBytes32);
+
+      expect(await token.hashUUID(testUUIDBytes32)).to.equal(
+        "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68"
+      );
     });
 
     it("can get uuid hash", async function () {
-      // getUUIDHash(owner, uuidHash, nonce)
+      expect(
+        await token.getUUIDHash(
+          bob.address,
+          "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
+          1
+        )
+      ).to.equal(
+        "0xe7b84d2b267da91a808104c53c158dbb6a305599c8618632efa6325e512d96ea"
+      );
+    });
+
+    it("can bind", async function () {
+      const signature: string = await bob.signMessage(
+        ethers.utils.arrayify(
+          "0xe7b84d2b267da91a808104c53c158dbb6a305599c8618632efa6325e512d96ea"
+        )
+      );
+
+      expect(
+        await token
+          .connect(bob)
+          .bind(
+            bob.address,
+            "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
+            1,
+            signature
+          )
+      ).to.emit(bob.address, "AddressBound");
+
+      expect(
+        await token.isBound(
+          bob.address,
+          "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68"
+        )
+      ).to.equal(true);
     });
   });
 });
