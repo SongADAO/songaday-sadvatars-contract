@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-abstract contract BrightIDValidatorBase is Ownable {
+abstract contract BrightIDValidatorBase is AccessControl {
     using ECDSA for bytes32;
 
     // Address of trusted verifier
@@ -37,7 +37,7 @@ abstract contract BrightIDValidatorBase is Ownable {
      *
      * Emits a {ContextSet} event.
      */
-    function setContext(bytes32 context) external onlyOwner {
+    function setContext(bytes32 context) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _context = context;
         emit ContextSet(context);
     }
@@ -51,7 +51,7 @@ abstract contract BrightIDValidatorBase is Ownable {
      *
      * Emits a {VerifierSet} event.
      */
-    function setVerifier(address verifier) external onlyOwner {
+    function setVerifier(address verifier) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _verifier = verifier;
         emit VerifierSet(verifier);
     }
