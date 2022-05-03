@@ -59,6 +59,10 @@ contract SongADayPFPBuilder is
         _unpause();
     }
 
+    // function totalSupply() public view virtual returns (uint256) {
+    //     return _tokenIdCounter.current();
+    // }
+
     function safeMint(
         address to,
         bytes32 inputTokenURI,
