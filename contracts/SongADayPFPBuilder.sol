@@ -28,6 +28,7 @@ contract SongADayPFPBuilder is
     string private _baseTokenURI;
 
     uint256 private _maxPerWallet = 2**256 - 1;
+    uint256 private _maxSupply = 2**256 - 1;
 
     constructor(
         address verifier,
@@ -62,8 +63,9 @@ contract SongADayPFPBuilder is
         bytes32 inputTokenAttribute,
         bytes calldata signature
     ) public virtual whenNotPaused {
-        require(balanceOf(to) < _maxPerWallet, "has reached per wallet limit");
+        require(balanceOf(to) < _maxPerWallet, "has reached max per wallet");
         uint256 tokenId = _tokenIdCounter.current();
+        require(tokenId < _maxSupply, "has reached max supply");
         _tokenIdCounter.increment();
         _safeMint(to, tokenId);
         _setTokenURIAndAttribute(
