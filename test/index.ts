@@ -518,7 +518,7 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[1]);
 
       await expect(mint(bob, mints[2])).to.be.revertedWith(
-        "has reached per wallet limit"
+        "has reached max per wallet"
       );
 
       await mint(sara, mints[2]);
