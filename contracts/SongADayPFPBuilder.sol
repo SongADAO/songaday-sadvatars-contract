@@ -72,15 +72,33 @@ contract SongADayPFPBuilder is
     }
 
     function safeMint(
-        address to,
+        // address to,
+        bytes32[] calldata contextIds,
+        uint256 timestamp,
+        uint8 v,
+        bytes32 r,
+        bytes32 s,
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
     ) public virtual whenNotPaused nonReentrant {
-        require(balanceOf(to) < _maxPerWallet, "has reached max per wallet");
+        require(totalSupply() < _maxSupply, "has reached max supply");
+
+        _validate(contextIds, timestamp, v, r, s);
+
+        uint256 balance;
+        for (uint256 i = 0; i < contextIds.length; i++) {
+            balance += BID721.balanceOf(_uuidToAddress[hashUUID(contextIds[i])]);
+        }
+
+        address to = _uuidToAddress[hashUUID(contextIds[0])];
+
+        // uint256 balance = balanceOf(to);
+        require(balance < _maxPerWallet, "has reached max per wallet");
+
         uint256 tokenId = _tokenIdCounter.current();
-        require(tokenId < _maxSupply, "has reached max supply");
         _tokenIdCounter.increment();
+
         _safeMint(to, tokenId);
         _setTokenURIAndAttribute(
             tokenId,
@@ -88,6 +106,21 @@ contract SongADayPFPBuilder is
             inputTokenAttribute,
             signature
         );
+    }
+
+    /**
+     * @dev See {BrightIDValidatorOwnership-bind}.
+     * A temporary safe version of {BrightIDValidatorOwnership-bind},
+     * it fixes the issue by preventing binding to an address that currently owns a token.
+     */
+    function bind(
+        address owner,
+        bytes32 uuidHash,
+        uint256 nonce,
+        bytes calldata signature
+    ) public override {
+        super.bind(owner, uuidHash, nonce, signature);
+        require(balanceOf(owner) == 0, "Address currently in use");
     }
 
     function changeTokenURIAndAttribute(
