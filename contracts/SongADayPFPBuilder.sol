@@ -86,15 +86,14 @@ contract SongADayPFPBuilder is
 
         _validate(contextIds, timestamp, v, r, s);
 
+        // uint256 balance = balanceOf(to);
         uint256 balance;
         for (uint256 i = 0; i < contextIds.length; i++) {
             balance += BID721.balanceOf(_uuidToAddress[hashUUID(contextIds[i])]);
         }
+        require(balance < _maxPerWallet, "has reached max per wallet");
 
         address to = _uuidToAddress[hashUUID(contextIds[0])];
-
-        // uint256 balance = balanceOf(to);
-        require(balance < _maxPerWallet, "has reached max per wallet");
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
