@@ -184,7 +184,7 @@ describe("SongADayPFP", function () {
     );
 
     const hashToBind: string = await token.getUUIDHash(
-      minter,
+      minter.address,
       params.uuidHash,
       params.nonce
     );
@@ -192,6 +192,11 @@ describe("SongADayPFP", function () {
     const bid721Signature: string = await minter.signMessage(
       ethers.utils.arrayify(hashToBind)
     );
+
+    const contextIds = [params.uuid];
+    const contextIdsByte32 = contextIds.map((contextId) => {
+      return strToByte32(contextId);
+    });
 
     await token
       .connect(minter)
@@ -201,7 +206,7 @@ describe("SongADayPFP", function () {
       .connect(minter)
       .safeMint(
         minter.address,
-        [params.uuidHash],
+        contextIdsByte32,
         1,
         1,
         "0x0000000000000000000000000000000000000000000000000000000000000000",
