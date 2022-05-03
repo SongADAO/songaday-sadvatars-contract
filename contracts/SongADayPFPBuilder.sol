@@ -72,7 +72,7 @@ contract SongADayPFPBuilder is
     }
 
     function safeMint(
-        // address to,
+        address to,
         bytes32[] calldata contextIds,
         uint256 timestamp,
         uint8 v,
@@ -93,7 +93,8 @@ contract SongADayPFPBuilder is
         }
         require(balance < _maxPerWallet, "has reached max per wallet");
 
-        address to = _uuidToAddress[hashUUID(contextIds[0])];
+        address boundTo = _uuidToAddress[hashUUID(contextIds[0])];
+        require(to == boundTo, "to address does not match bind");
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
