@@ -8,6 +8,7 @@ import "./BID721/extensions/BID721Enumerable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 import "./extensions/CustomAttributeAndURI.sol";
 
@@ -16,6 +17,7 @@ contract SongADayPFPBuilder is
     AccessControl,
     BID721,
     BID721Enumerable,
+    ReentrancyGuard,
     Pausable,
     CustomAttributeAndURI
 {
@@ -62,7 +64,7 @@ contract SongADayPFPBuilder is
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
-    ) public virtual whenNotPaused {
+    ) public virtual whenNotPaused nonReentrant {
         require(balanceOf(to) < _maxPerWallet, "has reached max per wallet");
         uint256 tokenId = _tokenIdCounter.current();
         require(tokenId < _maxSupply, "has reached max supply");
