@@ -63,6 +63,14 @@ contract SongADayPFPBuilder is
     //     return _tokenIdCounter.current();
     // }
 
+    function setMaxPerWallet(uint256 maxPerWallet)
+        public
+        virtual
+        onlyRole(DEFAULT_ADMIN_ROLE)
+    {
+        _maxPerWallet = maxPerWallet;
+    }
+
     function safeMint(
         address to,
         bytes32 inputTokenURI,
@@ -80,14 +88,6 @@ contract SongADayPFPBuilder is
             inputTokenAttribute,
             signature
         );
-    }
-
-    function setMaxPerWallet(uint256 maxPerWallet)
-        public
-        virtual
-        onlyRole(DEFAULT_ADMIN_ROLE)
-    {
-        _maxPerWallet = maxPerWallet;
     }
 
     function changeTokenURIAndAttribute(
