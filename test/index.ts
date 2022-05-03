@@ -20,7 +20,7 @@ describe("SongADayPFP", function () {
 
   const ZeroAddress: string = "0x0000000000000000000000000000000000000000";
 
-  const brightidVerifier: string = "0xb1d71F62bEe34E9Fc349234C201090c33BCdF6DB";
+  let brightidVerifier: any = null;
 
   const brightidContext: string =
     "0x736f756c626f756e640000000000000000000000000000000000000000000000";
@@ -198,6 +198,24 @@ describe("SongADayPFP", function () {
       return strToByte32(contextId);
     });
 
+    const timestamp = Date.now();
+
+    const validateMessage = ethers.utils.solidityKeccak256(
+      ["bytes32", "bytes32[]", "uint256"],
+      [brightidContext, contextIdsByte32, timestamp]
+    );
+
+    // const validateSignature: string = await brightidVerifier.signMessage(
+    //   ethers.utils.arrayify(validateMessage)
+    // );
+    // const validateSplitSignature =
+    //   ethers.utils.splitSignature(validateSignature);
+
+    const signingKey = new ethers.utils.SigningKey(brightidVerifier.privateKey);
+    const validateSplitSignature = await signingKey.signDigest(
+      ethers.utils.arrayify(validateMessage)
+    );
+
     await token
       .connect(minter)
       .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
@@ -207,10 +225,10 @@ describe("SongADayPFP", function () {
       .safeMint(
         minter.address,
         contextIdsByte32,
-        1,
-        1,
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
-        "0x0000000000000000000000000000000000000000000000000000000000000000",
+        timestamp,
+        validateSplitSignature.v,
+        validateSplitSignature.r,
+        validateSplitSignature.s,
         ipfsBase16ToBytes32(params.ipfsHashBase16),
         params.tokenAttribute,
         signature
@@ -237,9 +255,12 @@ describe("SongADayPFP", function () {
   }
 
   beforeEach(async () => {
+    brightidVerifier = ethers.Wallet.createRandom();
+
     const contract = await ethers.getContractFactory(contractName);
+
     token = await contract.deploy(
-      brightidVerifier,
+      brightidVerifier.address,
       brightidContext,
       tokenName,
       tokenSymbol,
