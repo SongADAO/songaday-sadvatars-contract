@@ -281,11 +281,15 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
 
-      await mint(bob, mints[1]);
-      expect(await token.balanceOf(bob.address)).to.equal(2);
+      // await mint(bob, mints[1]);
+      // expect(await token.balanceOf(bob.address)).to.equal(2);
+
+      // await mint(sara, mints[2]);
+      // expect(await token.balanceOf(bob.address)).to.equal(2);
+      // expect(await token.balanceOf(sara.address)).to.equal(1);
 
       await mint(sara, mints[2]);
-      expect(await token.balanceOf(bob.address)).to.equal(2);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
       expect(await token.balanceOf(sara.address)).to.equal(1);
     });
 
@@ -411,7 +415,7 @@ describe("SongADayPFP", function () {
         `${baseTokenURI}${mints[0].tokenURI}`
       );
 
-      await mint(bob, mints[1]);
+      await mint(jane, mints[1]);
       expect(await token.tokenURI(0)).to.equal(
         `${baseTokenURI}${mints[0].tokenURI}`
       );
@@ -419,7 +423,7 @@ describe("SongADayPFP", function () {
         `${baseTokenURI}${mints[1].tokenURI}`
       );
 
-      await mint(bob, mints[2]);
+      await mint(sara, mints[2]);
       expect(await token.tokenURI(0)).to.equal(
         `${baseTokenURI}${mints[0].tokenURI}`
       );
@@ -447,29 +451,29 @@ describe("SongADayPFP", function () {
       expect(await token.totalSupply()).to.equal(3);
     });
 
-    it("correctly looks token by owner and index", async function () {
+    it("correctly looks up token by owner and index", async function () {
       await mint(bob, mints[0]);
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
 
-      await mint(bob, mints[1]);
+      await mint(jane, mints[1]);
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
-      expect(await token.tokenOfOwnerByIndex(bob.address, 1)).to.equal(1);
+      expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
 
-      await mint(jane, mints[2]);
-      expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
-      expect(await token.tokenOfOwnerByIndex(bob.address, 1)).to.equal(1);
-      expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(2);
+      // await mint(bob, mints[2]);
+      // expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
+      // expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
+      // expect(await token.tokenOfOwnerByIndex(bob.address, 1)).to.equal(2);
     });
 
     it("correctly looks up token by index", async function () {
       await mint(bob, mints[0]);
       expect(await token.tokenByIndex(0)).to.equal(0);
 
-      await mint(bob, mints[1]);
+      await mint(jane, mints[1]);
       expect(await token.tokenByIndex(0)).to.equal(0);
       expect(await token.tokenByIndex(1)).to.equal(1);
 
-      await mint(jane, mints[2]);
+      await mint(sara, mints[2]);
       expect(await token.tokenByIndex(0)).to.equal(0);
       expect(await token.tokenByIndex(1)).to.equal(1);
       expect(await token.tokenByIndex(2)).to.equal(2);
