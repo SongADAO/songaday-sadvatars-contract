@@ -115,11 +115,24 @@ contract SongADayPFPBuilder is
      */
     function bind(
         address owner,
+        bytes32 uuidHash
+    ) public override {
+        super.bind(owner, uuidHash);
+        require(balanceOf(owner) == 0, "Address currently in use");
+    }
+
+    /**
+     * @dev See {BrightIDValidatorOwnership-bind}.
+     * A temporary safe version of {BrightIDValidatorOwnership-bind},
+     * it fixes the issue by preventing binding to an address that currently owns a token.
+     */
+    function bindViaRelay(
+        address owner,
         bytes32 uuidHash,
         uint256 nonce,
         bytes calldata signature
     ) public override {
-        super.bind(owner, uuidHash, nonce, signature);
+        super.bindViaRelay(owner, uuidHash, nonce, signature);
         require(balanceOf(owner) == 0, "Address currently in use");
     }
 

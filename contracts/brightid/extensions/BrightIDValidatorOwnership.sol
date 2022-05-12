@@ -29,6 +29,30 @@ contract BrightIDValidatorOwnership is BrightIDValidatorBase {
      * Requirements:
      *
      * - `uuidHash` must be not bound.
+     * - `owner` must be message sender.
+     *
+     * @param owner Owner address of signature
+     * @param uuidHash Keccak hash of generated UUID
+     */
+    function bind(
+        address owner,
+        bytes32 uuidHash
+    ) public virtual {
+        require(_uuidToAddress[uuidHash] == address(0), "BrightIDValidatorOwnership: UUID already bound");
+        require(owner == msg.sender, "BrightIDValidatorOwnership: Can only bind to own address");
+        _uuidToAddress[uuidHash] = owner;
+        emit AddressBound(owner);
+    }
+
+    /**
+     * @dev Bind an UUID to an address.
+     * This function is currently unsafe because an attacker may
+     * bind a compromised address to a context id linked to their BrightID.
+     * See {BrightIDSoulboundSingleMintAutoId-bind} for a temporary fix.
+     *
+     * Requirements:
+     *
+     * - `uuidHash` must be not bound.
      * - `signature` must be a valid ETH signed signature.
      * - the signer of `signature` must be `owner`.
      *
@@ -37,7 +61,7 @@ contract BrightIDValidatorOwnership is BrightIDValidatorBase {
      * @param nonce Generated nonce
      * @param signature Signed packed data
      */
-    function bind(
+    function bindViaRelay(
         address owner,
         bytes32 uuidHash,
         uint256 nonce,
