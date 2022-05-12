@@ -699,6 +699,14 @@ describe("SongADayPFP", function () {
       );
     });
 
+    it("can not bind to other address", async function () {
+      await expect(
+        token.connect(sara).bind(bob.address, mints[0].uuidHash)
+      ).to.be.revertedWith(
+        "BrightIDValidatorOwnership: Can only bind to sender address"
+      );
+    });
+
     it("can bind via relay", async function () {
       const signature: string = await bob.signMessage(
         ethers.utils.arrayify(mints[0].hashToBind)
