@@ -183,15 +183,15 @@ describe("SongADayPFP", function () {
       ethers.utils.arrayify(params.tokenURIAndAttributeHash)
     );
 
-    const hashToBind: string = await token.getUUIDHash(
-      minter.address,
-      params.uuidHash,
-      params.nonce
-    );
+    // const hashToBind: string = await token.getUUIDHash(
+    //   minter.address,
+    //   params.uuidHash,
+    //   params.nonce
+    // );
 
-    const bid721Signature: string = await minter.signMessage(
-      ethers.utils.arrayify(hashToBind)
-    );
+    // const bid721Signature: string = await minter.signMessage(
+    //   ethers.utils.arrayify(hashToBind)
+    // );
 
     const contextIds = [params.uuid];
     const contextIdsByte32 = contextIds.map((contextId) => {
@@ -218,7 +218,8 @@ describe("SongADayPFP", function () {
 
     await token
       .connect(minter)
-      .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
+      // .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
+      .bind(minter.address, params.uuidHash);
 
     return await token
       .connect(minter)
@@ -689,14 +690,29 @@ describe("SongADayPFP", function () {
     });
 
     it("can bind", async function () {
+      expect(
+        await token.connect(bob).bind(bob.address, mints[0].uuidHash)
+      ).to.emit(bob.address, "AddressBound");
+
+      expect(await token.isBound(bob.address, mints[0].uuidHash)).to.equal(
+        true
+      );
+    });
+
+    it("can bind via relay", async function () {
       const signature: string = await bob.signMessage(
         ethers.utils.arrayify(mints[0].hashToBind)
       );
 
       expect(
         await token
-          .connect(bob)
-          .bind(bob.address, mints[0].uuidHash, mints[0].nonce, signature)
+          .connect(sara)
+          .bindViaRelay(
+            bob.address,
+            mints[0].uuidHash,
+            mints[0].nonce,
+            signature
+          )
       ).to.emit(bob.address, "AddressBound");
 
       expect(await token.isBound(bob.address, mints[0].uuidHash)).to.equal(
