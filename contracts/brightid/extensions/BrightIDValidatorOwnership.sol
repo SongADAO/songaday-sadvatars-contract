@@ -39,7 +39,7 @@ contract BrightIDValidatorOwnership is BrightIDValidatorBase {
         bytes32 uuidHash
     ) public virtual {
         require(_uuidToAddress[uuidHash] == address(0), "BrightIDValidatorOwnership: UUID already bound");
-        require(owner == msg.sender, "BrightIDValidatorOwnership: Can only bind to own address");
+        require(owner == msg.sender, "BrightIDValidatorOwnership: Can only bind to sender address");
         _uuidToAddress[uuidHash] = owner;
         emit AddressBound(owner);
     }
