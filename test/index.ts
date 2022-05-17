@@ -173,6 +173,7 @@ describe("SongADayPFP", function () {
 
     if (binds[minter.address].isBound === false) {
       await bind(minter, binds[minter.address]);
+      binds[minter.address].isBound = true;
     }
 
     // token URI and Attribute Hash Authorization Signature
