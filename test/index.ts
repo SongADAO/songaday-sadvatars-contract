@@ -627,52 +627,29 @@ describe("SongADayPFP", function () {
       expect(await token.balanceOf(bob.address)).to.equal(1);
     });
 
-    // it("correctly prevents minting more than per wallet limit", async function () {
-    //   await token.connect(owner).setMaxPerWallet(1);
-    //   await mint(bob, mints[0]);
-    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
-    //     "Address currently in use"
-    //   );
+    it("correctly prevents minting more than per wallet limit", async function () {
+      await token.connect(owner).setMaxPerWallet(1);
+      await mint(bob, mints[0]);
+      await expect(mint(bob, mints[1])).to.be.revertedWith(
+        "has reached max per wallet"
+      );
 
-    //   await token.connect(owner).setMaxPerWallet(2);
-    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
-    //     "Address currently in use"
-    //   );
-    //   await expect(mint(bob, mints[2])).to.be.revertedWith(
-    //     "Address currently in use"
-    //   );
+      await token.connect(owner).setMaxPerWallet(2);
+      await mint(bob, mints[1]);
+      await expect(mint(bob, mints[2])).to.be.revertedWith(
+        "has reached max per wallet"
+      );
 
-    //   await mint(sara, mints[2]);
-    //   expect(await token.balanceOf(bob.address)).to.equal(1);
-    //   expect(await token.balanceOf(sara.address)).to.equal(1);
-    // });
-
-    // it("correctly prevents minting more than per wallet limit", async function () {
-    //   await token.connect(owner).setMaxPerWallet(1);
-    //   await mint(bob, mints[0]);
-    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
-    //     "has reached max per wallet"
-    //   );
-
-    //   await token.connect(owner).setMaxPerWallet(2);
-    //   await mint(bob, mints[1]);
-    //   await expect(mint(bob, mints[2])).to.be.revertedWith(
-    //     "has reached max per wallet"
-    //   );
-
-    //   await mint(sara, mints[2]);
-    //   expect(await token.balanceOf(bob.address)).to.equal(2);
-    //   expect(await token.balanceOf(sara.address)).to.equal(1);
-    // });
+      await mint(sara, mints[2]);
+      expect(await token.balanceOf(bob.address)).to.equal(2);
+      expect(await token.balanceOf(sara.address)).to.equal(1);
+    });
 
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
-
-      const mint1 = Object.assign({}, mints[1]);
-      mint1.tokenAttribute = mints[0].tokenAttribute;
-      mint1.ipfsHashBase16 = mints[0].ipfsHashBase16;
-
-      await expect(mint(sara, mint1)).to.be.revertedWith("attr already in use");
+      await expect(mint(sara, mints[0])).to.be.revertedWith(
+        "attr already in use"
+      );
     });
 
     it("correctly allows minting NFTs with different token attributes", async function () {
