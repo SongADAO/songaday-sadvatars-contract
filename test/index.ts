@@ -496,10 +496,10 @@ describe("SongADayPFP", function () {
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
       expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
 
-      // await mint(bob, mints[2]);
-      // expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
-      // expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
-      // expect(await token.tokenOfOwnerByIndex(bob.address, 1)).to.equal(2);
+      await mint(bob, mints[2]);
+      expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
+      expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
+      expect(await token.tokenOfOwnerByIndex(bob.address, 1)).to.equal(2);
     });
 
     it("correctly looks up token by index", async function () {
