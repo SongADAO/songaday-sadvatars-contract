@@ -46,12 +46,6 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010101",
       tokenURIAndAttributeHash:
         "0x06a8cfe17b84a3f53cb0a4b013f96c8df0243a44ce144a1fe9dec95f44852a1e",
-      uuid: "this-is-a-test-uuid",
-      uuidHash:
-        "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
-      nonce: "1",
-      hashToBind:
-        "0xe7b84d2b267da91a808104c53c158dbb6a305599c8618632efa6325e512d96ea",
     },
     {
       ipfsHash: "bafkreifzdy5gyz6pcmwoeg4hubvpzbrx3qkxpfjdzu3ujwxlbu2on4cmhe",
@@ -62,12 +56,6 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010f06",
       tokenURIAndAttributeHash:
         "0xe93af615e3ac639149715e5ef3cea14d4de7010c908b04b30d2ef38e09745a1c",
-      uuid: "this-is-a-test-uuid2",
-      uuidHash:
-        "0xfea4821353fdd0be7c67040afb2a9801dce110f5d5efa11942aaa3e18254f5a7",
-      nonce: "2",
-      hashToBind:
-        "0x418e35b208685734a1da43ec2680894ef7da4acada7dcb756f667fd12c2968dc",
     },
     {
       ipfsHash: "bafkreifslg7b64ajrhfh763624bpsinhpb3q5comecrq5ggtkkcctzveqy",
@@ -78,24 +66,10 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010f02",
       tokenURIAndAttributeHash:
         "0xbd7ed15d8d903803fa6e9b2c68dc9b44d168a26d918cad0faa972551b622b08c",
-      uuid: "this-is-a-test-uuid3",
-      uuidHash:
-        "0x1199cccbed3ae9aa44135defe47a8ed29fc073e6567cf2c6b5e6f84c0bcb6cc9",
-      nonce: "3",
-      hashToBind:
-        "0x0fb9704d20174a85a28d71e360488b0237783d0d1c610473729758f94d29092d",
     },
-    // {
-    //   ipfsHash: "bafkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri",
-    //   ipfsHashBase16:
-    //     "f01551220fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a",
-    //   tokenURI: "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri",
-    //   tokenAttribute:
-    //     "0x0000000000000000000000000000000000000000000000000001010101010f02",
-    //   tokenURIAndAttributeHash:
-    //     "0x2f7b8c092e2877ac58f84a242a3c6e79d9ab413a888c4753223fb1572e532fdc",
-    // },
   ];
+
+  let binds: any = {};
 
   // it("base test", async function () {
   //   const b32 = "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri";
@@ -174,7 +148,35 @@ describe("SongADayPFP", function () {
     return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
   }
 
+  async function bind(minter: any, params: any) {
+    return await token.connect(minter).bind(minter.address, params.uuidHash);
+  }
+
+  async function bindViaRelay(minter: any, params: any) {
+    const hashToBind: string = await token.getUUIDHash(
+      minter.address,
+      params.uuidHash,
+      params.nonce
+    );
+
+    const bid721Signature: string = await minter.signMessage(
+      ethers.utils.arrayify(hashToBind)
+    );
+
+    return await token
+      .connect(minter)
+      .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
+  }
+
   async function mint(minter: any, params: any) {
+    const uuid = binds[minter.address].uuid;
+
+    if (binds[minter.address].isBound === false) {
+      await bind(minter, binds[minter.address]);
+    }
+
+    // token URI and Attribute Hash Authorization Signature
+    // -------------------------------------------------------------------------
     const tokenURIAndAttributeHash = await token
       .connect(minter)
       .getTokenURIAndAttributeHash(
@@ -187,17 +189,9 @@ describe("SongADayPFP", function () {
       ethers.utils.arrayify(tokenURIAndAttributeHash)
     );
 
-    // const hashToBind: string = await token.getUUIDHash(
-    //   minter.address,
-    //   params.uuidHash,
-    //   params.nonce
-    // );
-
-    // const bid721Signature: string = await minter.signMessage(
-    //   ethers.utils.arrayify(hashToBind)
-    // );
-
-    const contextIds = [params.uuid];
+    // Bright ID Verifier Signature
+    // -------------------------------------------------------------------------
+    const contextIds = [uuid];
     const contextIdsByte32 = contextIds.map((contextId) => {
       return strToByte32(contextId);
     });
@@ -220,11 +214,8 @@ describe("SongADayPFP", function () {
       ethers.utils.arrayify(validateMessage)
     );
 
-    await token
-      .connect(minter)
-      // .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
-      .bind(minter.address, params.uuidHash);
-
+    // Mint
+    // -------------------------------------------------------------------------
     return await token
       .connect(minter)
       .safeMint(
@@ -282,6 +273,38 @@ describe("SongADayPFP", function () {
     );
 
     [owner, bob, jane, sara] = await ethers.getSigners();
+
+    binds = {};
+
+    binds[bob.address] = {
+      isBound: false,
+      uuid: "this-is-a-test-uuid",
+      uuidHash:
+        "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
+      nonce: "1",
+      hashToBind:
+        "0xe7b84d2b267da91a808104c53c158dbb6a305599c8618632efa6325e512d96ea",
+    };
+
+    binds[jane.address] = {
+      isBound: false,
+      uuid: "this-is-a-test-uuid2",
+      uuidHash:
+        "0xfea4821353fdd0be7c67040afb2a9801dce110f5d5efa11942aaa3e18254f5a7",
+      nonce: "2",
+      hashToBind:
+        "0x418e35b208685734a1da43ec2680894ef7da4acada7dcb756f667fd12c2968dc",
+    };
+
+    binds[sara.address] = {
+      isBound: false,
+      uuid: "this-is-a-test-uuid3",
+      uuidHash:
+        "0x1199cccbed3ae9aa44135defe47a8ed29fc073e6567cf2c6b5e6f84c0bcb6cc9",
+      nonce: "3",
+      hashToBind:
+        "0x0fb9704d20174a85a28d71e360488b0237783d0d1c610473729758f94d29092d",
+    };
 
     await token.deployed();
   });
@@ -603,27 +626,27 @@ describe("SongADayPFP", function () {
       expect(await token.balanceOf(bob.address)).to.equal(1);
     });
 
-    it("correctly prevents minting more than per wallet limit", async function () {
-      await token.connect(owner).setMaxPerWallet(1);
-      await mint(bob, mints[0]);
-      await expect(mint(bob, mints[1])).to.be.revertedWith(
-        "Address currently in use"
-      );
+    // it("correctly prevents minting more than per wallet limit", async function () {
+    //   await token.connect(owner).setMaxPerWallet(1);
+    //   await mint(bob, mints[0]);
+    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
+    //     "Address currently in use"
+    //   );
 
-      await token.connect(owner).setMaxPerWallet(2);
-      await expect(mint(bob, mints[1])).to.be.revertedWith(
-        "Address currently in use"
-      );
-      await expect(mint(bob, mints[2])).to.be.revertedWith(
-        "Address currently in use"
-      );
+    //   await token.connect(owner).setMaxPerWallet(2);
+    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
+    //     "Address currently in use"
+    //   );
+    //   await expect(mint(bob, mints[2])).to.be.revertedWith(
+    //     "Address currently in use"
+    //   );
 
-      await mint(sara, mints[2]);
-      expect(await token.balanceOf(bob.address)).to.equal(1);
-      expect(await token.balanceOf(sara.address)).to.equal(1);
-    });
+    //   await mint(sara, mints[2]);
+    //   expect(await token.balanceOf(bob.address)).to.equal(1);
+    //   expect(await token.balanceOf(sara.address)).to.equal(1);
+    // });
 
-    // it.only("correctly prevents minting more than per wallet limit", async function () {
+    // it("correctly prevents minting more than per wallet limit", async function () {
     //   await token.connect(owner).setMaxPerWallet(1);
     //   await mint(bob, mints[0]);
     //   await expect(mint(bob, mints[1])).to.be.revertedWith(
@@ -711,44 +734,56 @@ describe("SongADayPFP", function () {
 
   describe("BrightIDValidatorOwnership", function () {
     it("can hash uuid", async function () {
-      expect(await token.hashUUID(strToByte32(mints[0].uuid))).to.equal(
-        mints[0].uuidHash
-      );
-      expect(await token.hashUUID(strToByte32(mints[1].uuid))).to.equal(
-        mints[1].uuidHash
-      );
-      expect(await token.hashUUID(strToByte32(mints[2].uuid))).to.equal(
-        mints[2].uuidHash
-      );
+      expect(
+        await token.hashUUID(strToByte32(binds[bob.address].uuid))
+      ).to.equal(binds[bob.address].uuidHash);
+      expect(
+        await token.hashUUID(strToByte32(binds[jane.address].uuid))
+      ).to.equal(binds[jane.address].uuidHash);
+      expect(
+        await token.hashUUID(strToByte32(binds[sara.address].uuid))
+      ).to.equal(binds[sara.address].uuidHash);
     });
 
     it("can get uuid hash", async function () {
       expect(
-        await token.getUUIDHash(bob.address, mints[0].uuidHash, mints[0].nonce)
-      ).to.equal(mints[0].hashToBind);
+        await token.getUUIDHash(
+          bob.address,
+          binds[bob.address].uuidHash,
+          binds[bob.address].nonce
+        )
+      ).to.equal(binds[bob.address].hashToBind);
 
       expect(
-        await token.getUUIDHash(jane.address, mints[1].uuidHash, mints[1].nonce)
-      ).to.equal(mints[1].hashToBind);
+        await token.getUUIDHash(
+          jane.address,
+          binds[jane.address].uuidHash,
+          binds[jane.address].nonce
+        )
+      ).to.equal(binds[jane.address].hashToBind);
 
       expect(
-        await token.getUUIDHash(sara.address, mints[2].uuidHash, mints[2].nonce)
-      ).to.equal(mints[2].hashToBind);
+        await token.getUUIDHash(
+          sara.address,
+          binds[sara.address].uuidHash,
+          binds[sara.address].nonce
+        )
+      ).to.equal(binds[sara.address].hashToBind);
     });
 
     it("can bind", async function () {
       expect(
-        await token.connect(bob).bind(bob.address, mints[0].uuidHash)
+        await token.connect(bob).bind(bob.address, binds[bob.address].uuidHash)
       ).to.emit(bob.address, "AddressBound");
 
-      expect(await token.isBound(bob.address, mints[0].uuidHash)).to.equal(
-        true
-      );
+      expect(
+        await token.isBound(bob.address, binds[bob.address].uuidHash)
+      ).to.equal(true);
     });
 
     it("can not bind to other address", async function () {
       await expect(
-        token.connect(sara).bind(bob.address, mints[0].uuidHash)
+        token.connect(sara).bind(bob.address, binds[bob.address].uuidHash)
       ).to.be.revertedWith(
         "BrightIDValidatorOwnership: Can only bind to sender address"
       );
@@ -756,7 +791,7 @@ describe("SongADayPFP", function () {
 
     it("can bind via relay", async function () {
       const signature: string = await bob.signMessage(
-        ethers.utils.arrayify(mints[0].hashToBind)
+        ethers.utils.arrayify(binds[bob.address].hashToBind)
       );
 
       expect(
@@ -764,15 +799,15 @@ describe("SongADayPFP", function () {
           .connect(sara)
           .bindViaRelay(
             bob.address,
-            mints[0].uuidHash,
-            mints[0].nonce,
+            binds[bob.address].uuidHash,
+            binds[bob.address].nonce,
             signature
           )
       ).to.emit(bob.address, "AddressBound");
 
-      expect(await token.isBound(bob.address, mints[0].uuidHash)).to.equal(
-        true
-      );
+      expect(
+        await token.isBound(bob.address, binds[bob.address].uuidHash)
+      ).to.equal(true);
     });
   });
 });
