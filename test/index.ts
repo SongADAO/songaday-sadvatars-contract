@@ -644,7 +644,7 @@ describe("SongADayPFP", function () {
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
 
-      const mint1 = mints[1];
+      const mint1 = Object.assign({}, mints[1]);
       mint1.tokenAttribute = mints[0].tokenAttribute;
       mint1.ipfsHashBase16 = mints[0].ipfsHashBase16;
 
