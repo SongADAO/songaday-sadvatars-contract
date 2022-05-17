@@ -102,6 +102,7 @@ contract SongADayPFPBuilder is
         _safeMint(to, tokenId);
         _setTokenURIAndAttribute(
             tokenId,
+            to,
             inputTokenURI,
             inputTokenAttribute,
             signature
@@ -147,6 +148,7 @@ contract SongADayPFPBuilder is
 
         _setTokenURIAndAttribute(
             tokenId,
+            ownerOf(tokenId),
             inputTokenURI,
             inputTokenAttribute,
             signature
@@ -155,11 +157,13 @@ contract SongADayPFPBuilder is
 
     function _setTokenURIAndAttribute(
         uint256 tokenId,
+        address approvedAddress,
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
     ) internal virtual {
         address signer = _getTokenURIAndAttributeHashSigner(
+            approvedAddress,
             inputTokenURI,
             inputTokenAttribute,
             signature

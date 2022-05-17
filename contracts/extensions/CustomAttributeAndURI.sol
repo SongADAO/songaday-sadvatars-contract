@@ -87,10 +87,11 @@ abstract contract CustomAttributeAndURI is BID721, DecodeSegmentedURI {
     }
 
     function getTokenURIAndAttributeHash(
+        address approvedAddress,
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute
     ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(inputTokenURI, inputTokenAttribute));
+        return keccak256(abi.encodePacked(approvedAddress, inputTokenURI, inputTokenAttribute));
     }
 
     function _setTokenURI(uint256 tokenId, bytes32 inputTokenURI)
@@ -142,11 +143,13 @@ abstract contract CustomAttributeAndURI is BID721, DecodeSegmentedURI {
     }
 
     function _getTokenURIAndAttributeHashSigner(
+        address approvedAddress,
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
     ) internal pure virtual returns (address) {
         bytes32 message = getTokenURIAndAttributeHash(
+            approvedAddress,
             inputTokenURI,
             inputTokenAttribute
         );

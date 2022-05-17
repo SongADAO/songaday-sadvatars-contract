@@ -46,7 +46,7 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010101",
       tokenAttributeDecimal: 282578800148737,
       tokenURIAndAttributeHash:
-        "0x16825a98bfa551929f99636d76a74ad73c6cc21d77db5be380bceb3febec116b",
+        "0x06a8cfe17b84a3f53cb0a4b013f96c8df0243a44ce144a1fe9dec95f44852a1e",
       uuid: "this-is-a-test-uuid",
       uuidHash:
         "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
@@ -63,7 +63,7 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010f06",
       tokenAttributeDecimal: 282578800152326,
       tokenURIAndAttributeHash:
-        "0xe6cff0a42fc451f6883def7b95de32cc198b7d6269cb01253fe2b3c1b5de5928",
+        "0xe93af615e3ac639149715e5ef3cea14d4de7010c908b04b30d2ef38e09745a1c",
       uuid: "this-is-a-test-uuid2",
       uuidHash:
         "0xfea4821353fdd0be7c67040afb2a9801dce110f5d5efa11942aaa3e18254f5a7",
@@ -80,7 +80,7 @@ describe("SongADayPFP", function () {
         "0x0000000000000000000000000000000000000000000000000001010101010f02",
       tokenAttributeDecimal: 282578800152322,
       tokenURIAndAttributeHash:
-        "0x2f7b8c092e2877ac58f84a242a3c6e79d9ab413a888c4753223fb1572e532fdc",
+        "0xbd7ed15d8d903803fa6e9b2c68dc9b44d168a26d918cad0faa972551b622b08c",
       uuid: "this-is-a-test-uuid3",
       uuidHash:
         "0x1199cccbed3ae9aa44135defe47a8ed29fc073e6567cf2c6b5e6f84c0bcb6cc9",
@@ -179,8 +179,16 @@ describe("SongADayPFP", function () {
   }
 
   async function mint(minter: any, params: any) {
+    const tokenURIAndAttributeHash = await token
+      .connect(minter)
+      .getTokenURIAndAttributeHash(
+        minter.address,
+        ipfsBase16ToBytes32(params.ipfsHashBase16),
+        params.tokenAttribute
+      );
+
     const signature: string = await owner.signMessage(
-      ethers.utils.arrayify(params.tokenURIAndAttributeHash)
+      ethers.utils.arrayify(tokenURIAndAttributeHash)
     );
 
     // const hashToBind: string = await token.getUUIDHash(
@@ -241,8 +249,16 @@ describe("SongADayPFP", function () {
     tokenId: number,
     params: any
   ) {
+    const tokenURIAndAttributeHash = await token
+      .connect(minter)
+      .getTokenURIAndAttributeHash(
+        minter.address,
+        ipfsBase16ToBytes32(params.ipfsHashBase16),
+        params.tokenAttribute
+      );
+
     const signature: string = await owner.signMessage(
-      ethers.utils.arrayify(params.tokenURIAndAttributeHash)
+      ethers.utils.arrayify(tokenURIAndAttributeHash)
     );
 
     return await token
@@ -490,6 +506,7 @@ describe("SongADayPFP", function () {
         await token
           .connect(owner)
           .getTokenURIAndAttributeHash(
+            bob.address,
             ipfsBase16ToBytes32(mints[0].ipfsHashBase16),
             mints[0].tokenAttribute
           )
@@ -499,10 +516,21 @@ describe("SongADayPFP", function () {
         await token
           .connect(owner)
           .getTokenURIAndAttributeHash(
+            sara.address,
             ipfsBase16ToBytes32(mints[1].ipfsHashBase16),
             mints[1].tokenAttribute
           )
       ).to.equal(mints[1].tokenURIAndAttributeHash);
+
+      expect(
+        await token
+          .connect(owner)
+          .getTokenURIAndAttributeHash(
+            jane.address,
+            ipfsBase16ToBytes32(mints[2].ipfsHashBase16),
+            mints[2].tokenAttribute
+          )
+      ).to.equal(mints[2].tokenURIAndAttributeHash);
     });
 
     it("correctly assigns attribute string to NFT", async function () {
