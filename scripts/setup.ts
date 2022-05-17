@@ -19,7 +19,7 @@ async function main() {
     "0x0c4f432f54f7577b70FA18a03CF0641227C6193e"
   );
 
-  await token.setMaxPerWallet(0);
+  await token.setMaxPerWallet(1);
 
   const minterAddress = process.env.MINTER_ADDRESS || "";
   if (minterAddress) {

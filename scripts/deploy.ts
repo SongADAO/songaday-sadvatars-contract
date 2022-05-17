@@ -26,7 +26,7 @@ async function main() {
 
   await token.deployed();
 
-  await token.setMaxPerWallet(0);
+  await token.setMaxPerWallet(1);
 
   const minterAddress = process.env.MINTER_ADDRESS || "";
   if (minterAddress) {
