@@ -15,16 +15,9 @@ async function main() {
 
   // We get the contract to deploy
   const contract = await ethers.getContractFactory("SongADayPFPBuilder");
-  const token = await contract.deploy(
-    process.env.BRIGHTID_VERIFIER || "",
-    process.env.BRIGHTID_CONTEXT || "",
-    process.env.TOKEN_NAME || "",
-    process.env.TOKEN_SYMBOL || "",
-    process.env.TOKEN_BASE_URI || "",
-    process.env.TOKEN_BASE_URI_PREFIX || ""
+  const token = await contract.attach(
+    "0x0c4f432f54f7577b70FA18a03CF0641227C6193e"
   );
-
-  await token.deployed();
 
   await token.setMaxPerWallet(0);
 
@@ -37,7 +30,7 @@ async function main() {
     await token.grantRole(minterRoleParam, minterAddress);
   }
 
-  console.log("Contract deployed to:", token.address);
+  console.log("Contract setup complete");
 }
 
 // We recommend this pattern to be able to use async/await everywhere
