@@ -44,7 +44,6 @@ describe("SongADayPFP", function () {
       tokenURI: "afkreidpboogtrcyyz62y2i2vgk2yjd3iianf77i3wdarcvxwyezuzapmu",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010101",
-      tokenAttributeDecimal: 282578800148737,
       tokenURIAndAttributeHash:
         "0x06a8cfe17b84a3f53cb0a4b013f96c8df0243a44ce144a1fe9dec95f44852a1e",
       uuid: "this-is-a-test-uuid",
@@ -61,7 +60,6 @@ describe("SongADayPFP", function () {
       tokenURI: "afkreifzdy5gyz6pcmwoeg4hubvpzbrx3qkxpfjdzu3ujwxlbu2on4cmhe",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010f06",
-      tokenAttributeDecimal: 282578800152326,
       tokenURIAndAttributeHash:
         "0xe93af615e3ac639149715e5ef3cea14d4de7010c908b04b30d2ef38e09745a1c",
       uuid: "this-is-a-test-uuid2",
@@ -78,7 +76,6 @@ describe("SongADayPFP", function () {
       tokenURI: "afkreifslg7b64ajrhfh763624bpsinhpb3q5comecrq5ggtkkcctzveqy",
       tokenAttribute:
         "0x0000000000000000000000000000000000000000000000000001010101010f02",
-      tokenAttributeDecimal: 282578800152322,
       tokenURIAndAttributeHash:
         "0xbd7ed15d8d903803fa6e9b2c68dc9b44d168a26d918cad0faa972551b622b08c",
       uuid: "this-is-a-test-uuid3",
@@ -95,7 +92,6 @@ describe("SongADayPFP", function () {
     //   tokenURI: "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri",
     //   tokenAttribute:
     //     "0x0000000000000000000000000000000000000000000000000001010101010f02",
-    //   tokenAttributeDecimal: 282578800152322,
     //   tokenURIAndAttributeHash:
     //     "0x2f7b8c092e2877ac58f84a242a3c6e79d9ab413a888c4753223fb1572e532fdc",
     // },
@@ -611,33 +607,56 @@ describe("SongADayPFP", function () {
       await token.connect(owner).setMaxPerWallet(1);
       await mint(bob, mints[0]);
       await expect(mint(bob, mints[1])).to.be.revertedWith(
-        "has reached max per wallet"
+        "Address currently in use"
       );
 
       await token.connect(owner).setMaxPerWallet(2);
-      await mint(bob, mints[1]);
+      await expect(mint(bob, mints[1])).to.be.revertedWith(
+        "Address currently in use"
+      );
       await expect(mint(bob, mints[2])).to.be.revertedWith(
-        "has reached max per wallet"
+        "Address currently in use"
       );
 
       await mint(sara, mints[2]);
-      expect(await token.balanceOf(bob.address)).to.equal(2);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
       expect(await token.balanceOf(sara.address)).to.equal(1);
     });
+
+    // it.only("correctly prevents minting more than per wallet limit", async function () {
+    //   await token.connect(owner).setMaxPerWallet(1);
+    //   await mint(bob, mints[0]);
+    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
+    //     "has reached max per wallet"
+    //   );
+
+    //   await token.connect(owner).setMaxPerWallet(2);
+    //   await mint(bob, mints[1]);
+    //   await expect(mint(bob, mints[2])).to.be.revertedWith(
+    //     "has reached max per wallet"
+    //   );
+
+    //   await mint(sara, mints[2]);
+    //   expect(await token.balanceOf(bob.address)).to.equal(2);
+    //   expect(await token.balanceOf(sara.address)).to.equal(1);
+    // });
 
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
 
-      await expect(mint(sara, mints[0])).to.be.revertedWith(
-        "attr already in use"
-      );
+      const mint1 = mints[1];
+      mint1.tokenAttribute = mints[0].tokenAttribute;
+      mint1.ipfsHashBase16 = mints[0].ipfsHashBase16;
+
+      await expect(mint(sara, mint1)).to.be.revertedWith("attr already in use");
     });
 
     it("correctly allows minting NFTs with different token attributes", async function () {
       await mint(bob, mints[0]);
-      await mint(bob, mints[1]);
+      await mint(sara, mints[1]);
 
-      expect(await token.balanceOf(bob.address)).to.equal(2);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
+      expect(await token.balanceOf(sara.address)).to.equal(1);
     });
   });
 
