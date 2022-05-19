@@ -33,13 +33,14 @@ contract SongADayPFPBuilder is
     uint256 private _maxSupply = 2**256 - 1;
 
     constructor(
-        address verifier,
-        bytes32 context,
+        address verifier_,
+        bytes32 context_,
+        bytes memory messageToSign_,
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
         bytes4 baseTokenURIPrefix
-    ) BID721(verifier, context, name, symbol) {
+    ) BID721(verifier_, context_, messageToSign_, name, symbol) {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -86,7 +87,7 @@ contract SongADayPFPBuilder is
 
         _validate(contextIds, timestamp, v, r, s);
 
-        address[] members = _recoverAll(contextIds);
+        address[] memory members = _recoverAll(contextIds);
 
         require(members.length > 0, "BID721: need 1 member to mint");
         require(to == members[0], "to must match newest context");
