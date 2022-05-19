@@ -18,7 +18,7 @@ contract BrightIDValidatorMulti is BrightIDValidatorBase {
      *
      * - the caller must be the owner.
      */
-    function setVerifierToken(IERC20 verifierToken_) external virtual onlyOwner {
+    function setVerifierToken(IERC20 verifierToken_) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         _verifierToken = verifierToken_;
     }
 

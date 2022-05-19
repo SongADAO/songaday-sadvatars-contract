@@ -17,7 +17,7 @@ contract BrightIDValidatorSingle is BrightIDValidatorBase {
      *
      * - the caller must be the owner.
      */
-    function setVerifier(address verifier_) external virtual onlyOwner {
+    function setVerifier(address verifier_) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         _verifier = verifier_;
     }
 

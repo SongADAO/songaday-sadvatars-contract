@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.11;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IBrightIDValidator.sol";
 
-abstract contract BrightIDValidatorBase is Ownable, IBrightIDValidator {
+abstract contract BrightIDValidatorBase is AccessControl, IBrightIDValidator {
     bytes32 private _context;
 
     constructor(bytes32 context_) {
@@ -18,7 +18,7 @@ abstract contract BrightIDValidatorBase is Ownable, IBrightIDValidator {
      *
      * - the caller must be the owner.
      */
-    function setContext(bytes32 context_) external virtual onlyOwner {
+    function setContext(bytes32 context_) external virtual onlyRole(DEFAULT_ADMIN_ROLE) {
         _context = context_;
     }
 
