@@ -73,7 +73,7 @@ contract SongADayPFPBuilder is
 
     function safeMint(
         address to,
-        bytes32[] calldata contextIds,
+        bytes calldata contextIds,
         uint256 timestamp,
         uint8 v,
         bytes32 r,
@@ -86,18 +86,20 @@ contract SongADayPFPBuilder is
 
         _validate(contextIds, timestamp, v, r, s);
 
-        // uint256 balance = balanceOf(to);
+        address[] members = _recoverAll(contextIds);
+
+        require(members.length > 0, "BID721: need 1 member to mint");
+        require(to == members[0], "to must match newest context");
+        require(to != address(0), "can not mint to zero address");
+
         uint256 balance;
-        for (uint256 i = 0; i < contextIds.length; i++) {
-            address uuidAddress = _uuidToAddress[hashUUID(contextIds[i])];
-            if (uuidAddress != address(0)) {
-                balance += BID721.balanceOf(uuidAddress);
+        for (uint256 i = 0; i < members.length; i++) {
+            if (members[i] != address(0)) {
+                balance += BID721.balanceOf(members[i]);
             }
         }
-        require(balance < _maxPerWallet, "has reached max per wallet");
 
-        address boundTo = _uuidToAddress[hashUUID(contextIds[0])];
-        require(to == boundTo, "to address does not match bind");
+        require(balance < _maxPerWallet, "has reached max per wallet");
 
         uint256 tokenId = _tokenIdCounter.current();
         _tokenIdCounter.increment();
@@ -110,34 +112,6 @@ contract SongADayPFPBuilder is
             inputTokenAttribute,
             signature
         );
-    }
-
-    /**
-     * @dev See {BrightIDValidatorOwnership-bind}.
-     * A temporary safe version of {BrightIDValidatorOwnership-bind},
-     * it fixes the issue by preventing binding to an address that currently owns a token.
-     */
-    function bind(
-        address owner,
-        bytes32 uuidHash
-    ) public override {
-        super.bind(owner, uuidHash);
-        require(balanceOf(owner) == 0, "Address currently in use");
-    }
-
-    /**
-     * @dev See {BrightIDValidatorOwnership-bind}.
-     * A temporary safe version of {BrightIDValidatorOwnership-bind},
-     * it fixes the issue by preventing binding to an address that currently owns a token.
-     */
-    function bindViaRelay(
-        address owner,
-        bytes32 uuidHash,
-        uint256 nonce,
-        bytes calldata signature
-    ) public override {
-        super.bindViaRelay(owner, uuidHash, nonce, signature);
-        require(balanceOf(owner) == 0, "Address currently in use");
     }
 
     function changeTokenURIAndAttribute(

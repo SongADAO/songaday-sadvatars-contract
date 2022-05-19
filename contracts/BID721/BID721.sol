@@ -13,14 +13,14 @@ import "./extensions/IBID721Metadata.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
-import "../brightid/extensions/BrightIDValidatorOwnership.sol";
+import "../brightid/extensions/BrightIDValidatorSignature.sol";
 
 /**
  * @dev Implementation of https://eips.ethereum.org/EIPS/eip-721[BID721] Non-Fungible Token Standard, including
  * the Metadata extension, but not including the Enumerable extension, which is available separately as
  * {BID721Enumerable}.
  */
-contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorOwnership {
+contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorSignature {
     using Address for address;
     using Strings for uint256;
 
@@ -39,7 +39,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
-    constructor(address verifier, bytes32 context, string memory name_, string memory symbol_) BrightIDValidatorOwnership(verifier, context) {
+    constructor(address verifier_, bytes32 context_, bytes memory messageToSign_, string memory name_, string memory symbol_) BrightIDValidatorSignature(verifier_, context_, messageToSign_) {
         _name = name_;
         _symbol = symbol_;
     }
@@ -310,18 +310,24 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
      * - at least one element in `contextIds` resolves to the owner address of token `tokenId`.
      */
     function _lookup(
-        bytes32[] calldata contextIds,
+        bytes calldata contextIds,
         uint256 tokenId
     ) internal view returns (address, address) {
         address owner = ownerOf(tokenId);
-        for (uint256 i = 1; i < contextIds.length; i++) {
-            if (owner == _uuidToAddress[hashUUID(contextIds[i])]) {
-                return (
-                    _uuidToAddress[hashUUID(contextIds[i])],
-                    _uuidToAddress[hashUUID(contextIds[0])]
-                );
+
+        address[] memory members = _recoverAll(contextIds);
+
+        require(members.length > 1, "BID721: need 2 members to rescue");
+
+        address to = members[0];
+
+        for (uint256 i = 1; i < members.length; i++) {
+            address from = members[i];
+            if (owner == from) {
+                return (from, to);
             }
         }
+
         revert("BID721: no token to rescue");
     }
 
@@ -329,7 +335,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
      * @dev Rescue the token `tokenId` without control of the owner address.
      */
     function rescue(
-        bytes32[] calldata contextIds,
+        bytes calldata contextIds,
         uint256 timestamp,
         uint256 tokenId,
         uint8 v,
@@ -343,7 +349,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorO
      * @dev See {BID721-rescue}.
      */
     function rescue(
-        bytes32[] calldata contextIds,
+        bytes calldata contextIds,
         uint256 timestamp,
         uint256 tokenId,
         uint8 v,
