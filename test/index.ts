@@ -799,7 +799,7 @@ describe("SongADayPFP", function () {
 
     it("is correctly rescued with data param", async function () {
       await mint(bob, mints[0]);
-      await rescue(sara, [binds[bob.address].uuid], 0, "test");
+      await rescue(sara, [binds[bob.address].uuid], 0, 12345);
     });
   });
 
