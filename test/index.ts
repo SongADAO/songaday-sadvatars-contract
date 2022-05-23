@@ -20,9 +20,9 @@ describe("SongADayPFP", function () {
 
   const ZeroAddress: string = "0x0000000000000000000000000000000000000000";
 
-  let brightidVerifier: any = null;
+  let brightIDVerifier: any = null;
 
-  const brightidContext: string =
+  const brightIDContext: string =
     "0x736f756c626f756e640000000000000000000000000000000000000000000000";
 
   const contractName: string = "SongADayPFPBuilder";
@@ -168,7 +168,26 @@ describe("SongADayPFP", function () {
       .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
   }
 
-  async function mint(minter: any, params: any) {
+  async function getBrightIDSignature(
+    brightIDContext: string,
+    contextIdsByte32: string[],
+    timestamp: number
+  ) {
+    const validateMessage = ethers.utils.solidityKeccak256(
+      ["bytes32", "bytes32[]", "uint256"],
+      [brightIDContext, contextIdsByte32, timestamp]
+    );
+
+    const signingKey = new ethers.utils.SigningKey(brightIDVerifier.privateKey);
+
+    const validateSplitSignature = await signingKey.signDigest(
+      ethers.utils.arrayify(validateMessage)
+    );
+
+    return validateSplitSignature;
+  }
+
+  async function mint(minter: any, params: any, contextIds: string[] = []) {
     const uuid = binds[minter.address].uuid;
 
     if (binds[minter.address].isBound === false) {
@@ -176,43 +195,36 @@ describe("SongADayPFP", function () {
       binds[minter.address].isBound = true;
     }
 
+    contextIds.unshift(uuid);
+
+    // Bright ID Verifier Signature
+    // -------------------------------------------------------------------------
+    const brightIDValidationContextIdsByte32 = contextIds.map((contextId) => {
+      return strToByte32(contextId);
+    });
+
+    const brightIDValidationTimestamp = Date.now();
+
+    const brightIDValidationSignature = await getBrightIDSignature(
+      brightIDContext,
+      brightIDValidationContextIdsByte32,
+      brightIDValidationTimestamp
+    );
+
     // token URI and Attribute Hash Authorization Signature
     // -------------------------------------------------------------------------
+    const ipfsHashBase16Bytes32 = ipfsBase16ToBytes32(params.ipfsHashBase16);
+
     const tokenURIAndAttributeHash = await token
       .connect(minter)
       .getTokenURIAndAttributeHash(
         minter.address,
-        ipfsBase16ToBytes32(params.ipfsHashBase16),
+        ipfsHashBase16Bytes32,
         params.tokenAttribute
       );
 
-    const signature: string = await owner.signMessage(
+    const tokenURIAndAttributeHashSignature: string = await owner.signMessage(
       ethers.utils.arrayify(tokenURIAndAttributeHash)
-    );
-
-    // Bright ID Verifier Signature
-    // -------------------------------------------------------------------------
-    const contextIds = [uuid];
-    const contextIdsByte32 = contextIds.map((contextId) => {
-      return strToByte32(contextId);
-    });
-
-    const timestamp = Date.now();
-
-    const validateMessage = ethers.utils.solidityKeccak256(
-      ["bytes32", "bytes32[]", "uint256"],
-      [brightidContext, contextIdsByte32, timestamp]
-    );
-
-    // const validateSignature: string = await brightidVerifier.signMessage(
-    //   ethers.utils.arrayify(validateMessage)
-    // );
-    // const validateSplitSignature =
-    //   ethers.utils.splitSignature(validateSignature);
-
-    const signingKey = new ethers.utils.SigningKey(brightidVerifier.privateKey);
-    const validateSplitSignature = await signingKey.signDigest(
-      ethers.utils.arrayify(validateMessage)
     );
 
     // Mint
@@ -221,21 +233,21 @@ describe("SongADayPFP", function () {
       .connect(minter)
       .safeMint(
         minter.address,
-        contextIdsByte32,
-        timestamp,
-        validateSplitSignature.v,
-        validateSplitSignature.r,
-        validateSplitSignature.s,
-        ipfsBase16ToBytes32(params.ipfsHashBase16),
+        brightIDValidationContextIdsByte32,
+        brightIDValidationTimestamp,
+        brightIDValidationSignature.v,
+        brightIDValidationSignature.r,
+        brightIDValidationSignature.s,
+        ipfsHashBase16Bytes32,
         params.tokenAttribute,
-        signature
+        tokenURIAndAttributeHashSignature
       );
   }
 
   async function rescue(
     rescuer: any,
-    rescueContextIds: string[],
-    toRescue: number,
+    contextIds: string[],
+    tokenIDToRescue: number,
     data: any
   ) {
     const uuid = binds[rescuer.address].uuid;
@@ -245,30 +257,20 @@ describe("SongADayPFP", function () {
       binds[rescuer.address].isBound = true;
     }
 
+    contextIds.unshift(uuid);
+
     // Bright ID Verifier Signature
     // -------------------------------------------------------------------------
-    const contextIds = rescueContextIds;
-    contextIds.unshift(uuid);
-    const contextIdsByte32 = contextIds.map((contextId) => {
+    const brightIDValidationContextIdsByte32 = contextIds.map((contextId) => {
       return strToByte32(contextId);
     });
 
-    const timestamp = Date.now();
+    const brightIDValidationTimestamp = Date.now();
 
-    const validateMessage = ethers.utils.solidityKeccak256(
-      ["bytes32", "bytes32[]", "uint256"],
-      [brightidContext, contextIdsByte32, timestamp]
-    );
-
-    // const validateSignature: string = await brightidVerifier.signMessage(
-    //   ethers.utils.arrayify(validateMessage)
-    // );
-    // const validateSplitSignature =
-    //   ethers.utils.splitSignature(validateSignature);
-
-    const signingKey = new ethers.utils.SigningKey(brightidVerifier.privateKey);
-    const validateSplitSignature = await signingKey.signDigest(
-      ethers.utils.arrayify(validateMessage)
+    const brightIDValidationSignature = await getBrightIDSignature(
+      brightIDContext,
+      brightIDValidationContextIdsByte32,
+      brightIDValidationTimestamp
     );
 
     // Mint
@@ -277,23 +279,23 @@ describe("SongADayPFP", function () {
       return await token
         .connect(rescuer)
         ["rescue(bytes32[],uint256,uint256,uint8,bytes32,bytes32)"](
-          contextIdsByte32,
-          timestamp,
-          toRescue,
-          validateSplitSignature.v,
-          validateSplitSignature.r,
-          validateSplitSignature.s
+          brightIDValidationContextIdsByte32,
+          brightIDValidationTimestamp,
+          tokenIDToRescue,
+          brightIDValidationSignature.v,
+          brightIDValidationSignature.r,
+          brightIDValidationSignature.s
         );
     } else {
       return await token
         .connect(rescuer)
         ["rescue(bytes32[],uint256,uint256,uint8,bytes32,bytes32,bytes)"](
-          contextIdsByte32,
-          timestamp,
-          toRescue,
-          validateSplitSignature.v,
-          validateSplitSignature.r,
-          validateSplitSignature.s,
+          brightIDValidationContextIdsByte32,
+          brightIDValidationTimestamp,
+          tokenIDToRescue,
+          brightIDValidationSignature.v,
+          brightIDValidationSignature.r,
+          brightIDValidationSignature.s,
           data
         );
     }
@@ -327,13 +329,13 @@ describe("SongADayPFP", function () {
   }
 
   beforeEach(async () => {
-    brightidVerifier = ethers.Wallet.createRandom();
+    brightIDVerifier = ethers.Wallet.createRandom();
 
     const contract = await ethers.getContractFactory(contractName);
 
     token = await contract.deploy(
-      brightidVerifier.address,
-      brightidContext,
+      brightIDVerifier.address,
+      brightIDContext,
       tokenName,
       tokenSymbol,
       baseTokenURI,
@@ -752,7 +754,7 @@ describe("SongADayPFP", function () {
   // BID721
   // ===========================================================================
 
-  describe.only("BID721", function () {
+  describe("BID721", function () {
     it("is correctly rescued", async function () {
       await mint(bob, mints[0]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
