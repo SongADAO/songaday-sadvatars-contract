@@ -69,6 +69,8 @@ describe("SongADayPFP", function () {
     },
   ];
 
+  let isBound: any = [];
+
   let binds: any = {};
 
   // it("base test", async function () {
@@ -148,15 +150,23 @@ describe("SongADayPFP", function () {
     return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
   }
 
-  async function bind(minter: any, params: any) {
-    return await token.connect(minter).bind(minter.address, params.uuidHash);
+  async function bind(binder: any, uuid: string) {
+    if (isBound.indexOf(uuid) === -1) {
+      const uuidHash = await token.hashUUID(strToByte32(uuid));
+
+      await token.connect(binder).bind(binder.address, uuidHash);
+
+      isBound.push(uuid);
+    }
   }
 
-  async function bindViaRelay(minter: any, params: any) {
+  async function bindViaRelay(minter: any, uuid: string, nonce: number) {
+    const uuidHash = await token.hashUUID(strToByte32(uuid));
+
     const hashToBind: string = await token.getUUIDHash(
       minter.address,
-      params.uuidHash,
-      params.nonce
+      uuidHash,
+      nonce
     );
 
     const bid721Signature: string = await minter.signMessage(
@@ -165,7 +175,7 @@ describe("SongADayPFP", function () {
 
     return await token
       .connect(minter)
-      .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
+      .bind(minter.address, uuidHash, nonce, bid721Signature);
   }
 
   async function getBrightIDSignature(
@@ -189,12 +199,7 @@ describe("SongADayPFP", function () {
 
   async function mint(minter: any, params: any, contextIds: string[] = []) {
     const uuid = binds[minter.address].uuid;
-
-    if (binds[minter.address].isBound === false) {
-      await bind(minter, binds[minter.address]);
-      binds[minter.address].isBound = true;
-    }
-
+    await bind(minter, uuid);
     contextIds.unshift(uuid);
 
     // Bright ID Verifier Signature
@@ -251,12 +256,7 @@ describe("SongADayPFP", function () {
     data: any
   ) {
     const uuid = binds[rescuer.address].uuid;
-
-    if (binds[rescuer.address].isBound === false) {
-      await bind(rescuer, binds[rescuer.address]);
-      binds[rescuer.address].isBound = true;
-    }
-
+    await bind(rescuer, uuid);
     contextIds.unshift(uuid);
 
     // Bright ID Verifier Signature
@@ -344,10 +344,11 @@ describe("SongADayPFP", function () {
 
     [owner, bob, jane, sara] = await ethers.getSigners();
 
+    isBound = [];
+
     binds = {};
 
     binds[bob.address] = {
-      isBound: false,
       uuid: "this-is-a-test-uuid",
       uuidHash:
         "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
@@ -357,7 +358,6 @@ describe("SongADayPFP", function () {
     };
 
     binds[jane.address] = {
-      isBound: false,
       uuid: "this-is-a-test-uuid2",
       uuidHash:
         "0xfea4821353fdd0be7c67040afb2a9801dce110f5d5efa11942aaa3e18254f5a7",
@@ -367,7 +367,6 @@ describe("SongADayPFP", function () {
     };
 
     binds[sara.address] = {
-      isBound: false,
       uuid: "this-is-a-test-uuid3",
       uuidHash:
         "0x1199cccbed3ae9aa44135defe47a8ed29fc073e6567cf2c6b5e6f84c0bcb6cc9",
