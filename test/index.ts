@@ -232,6 +232,73 @@ describe("SongADayPFP", function () {
       );
   }
 
+  async function rescue(
+    rescuer: any,
+    rescueContextIds: string[],
+    toRescue: number,
+    data: any
+  ) {
+    const uuid = binds[rescuer.address].uuid;
+
+    if (binds[rescuer.address].isBound === false) {
+      await bind(rescuer, binds[rescuer.address]);
+      binds[rescuer.address].isBound = true;
+    }
+
+    // Bright ID Verifier Signature
+    // -------------------------------------------------------------------------
+    const contextIds = rescueContextIds;
+    contextIds.unshift(uuid);
+    const contextIdsByte32 = contextIds.map((contextId) => {
+      return strToByte32(contextId);
+    });
+
+    const timestamp = Date.now();
+
+    const validateMessage = ethers.utils.solidityKeccak256(
+      ["bytes32", "bytes32[]", "uint256"],
+      [brightidContext, contextIdsByte32, timestamp]
+    );
+
+    // const validateSignature: string = await brightidVerifier.signMessage(
+    //   ethers.utils.arrayify(validateMessage)
+    // );
+    // const validateSplitSignature =
+    //   ethers.utils.splitSignature(validateSignature);
+
+    const signingKey = new ethers.utils.SigningKey(brightidVerifier.privateKey);
+    const validateSplitSignature = await signingKey.signDigest(
+      ethers.utils.arrayify(validateMessage)
+    );
+
+    // Mint
+    // -------------------------------------------------------------------------
+    if (data === null) {
+      return await token
+        .connect(rescuer)
+        ["rescue(bytes32[],uint256,uint256,uint8,bytes32,bytes32)"](
+          contextIdsByte32,
+          timestamp,
+          toRescue,
+          validateSplitSignature.v,
+          validateSplitSignature.r,
+          validateSplitSignature.s
+        );
+    } else {
+      return await token
+        .connect(rescuer)
+        ["rescue(bytes32[],uint256,uint256,uint8,bytes32,bytes32,bytes)"](
+          contextIdsByte32,
+          timestamp,
+          toRescue,
+          validateSplitSignature.v,
+          validateSplitSignature.r,
+          validateSplitSignature.s,
+          data
+        );
+    }
+  }
+
   async function changeTokenURIAndAttribute(
     minter: any,
     tokenId: number,
@@ -685,8 +752,55 @@ describe("SongADayPFP", function () {
   // BID721
   // ===========================================================================
 
-  describe("BID721", function () {
-    it("is correctly rescued", async function () {});
+  describe.only("BID721", function () {
+    it("is correctly rescued", async function () {
+      await mint(bob, mints[0]);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
+      expect(await token.balanceOf(sara.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(0);
+
+      await rescue(sara, [binds[bob.address].uuid], 0, null);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(sara.address)).to.equal(1);
+      expect(await token.balanceOf(jane.address)).to.equal(0);
+
+      await rescue(
+        jane,
+        [binds[sara.address].uuid, binds[bob.address].uuid],
+        0,
+        null
+      );
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(sara.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(1);
+    });
+
+    it("is correctly rescued from any uuid in list", async function () {
+      await mint(bob, mints[0]);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
+      expect(await token.balanceOf(sara.address)).to.equal(0);
+
+      await rescue(sara, ["test1", "test2", binds[bob.address].uuid], 0, null);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(sara.address)).to.equal(1);
+    });
+
+    it("prevents rescue of unassociated uuid", async function () {
+      await mint(bob, mints[0]);
+
+      await expect(rescue(sara, [], 0, null)).to.be.revertedWith(
+        "BID721: no token to rescue"
+      );
+
+      await expect(
+        rescue(sara, [binds[jane.address].uuid], 0, null)
+      ).to.be.revertedWith("BID721: no token to rescue");
+    });
+
+    it("is correctly rescued with data param", async function () {
+      await mint(bob, mints[0]);
+      await rescue(sara, [binds[bob.address].uuid], 0, "test");
+    });
   });
 
   // BrightIDValidatorBase
