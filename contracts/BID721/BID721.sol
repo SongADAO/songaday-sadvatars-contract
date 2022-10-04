@@ -309,21 +309,31 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorS
      * - length of `contextIds` must be greater than 1.
      * - at least one element in `contextIds` resolves to the owner address of token `tokenId`.
      */
-    function _lookup(bytes32[] calldata contextIds, uint256 tokenId) internal view returns (address, address) {
+    function _lookup(
+        address[] calldata contextIds,
+        uint256 tokenId
+    ) internal view returns (address, address) {
         address owner = ownerOf(tokenId);
+
+        require(contextIds.length > 1, "BID721: need 2 contextIds to rescue");
+
+        address to = contextIds[0];
+
         for (uint256 i = 1; i < contextIds.length; i++) {
-            if (owner == _uuidToAddress[hashUUID(contextIds[i])]) {
-                return (_uuidToAddress[hashUUID(contextIds[i])], _uuidToAddress[hashUUID(contextIds[0])]);
+            address from = contextIds[i];
+            if (owner == from) {
+                return (from, to);
             }
         }
-        revert("BrightIDSoulbound: no token to rescue");
+
+        revert("BID721: no token to rescue");
     }
 
     /**
      * @dev Rescue the token `tokenId` without control of the owner address.
      */
     function rescue(
-        bytes calldata contextIds,
+        address[] calldata contextIds,
         uint256 timestamp,
         uint256 tokenId,
         uint8 v,
@@ -337,7 +347,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorS
      * @dev See {BID721-rescue}.
      */
     function rescue(
-        bytes calldata contextIds,
+        address[] calldata contextIds,
         uint256 timestamp,
         uint256 tokenId,
         uint8 v,

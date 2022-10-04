@@ -74,7 +74,7 @@ contract SongADayPFPBuilder is
 
     function safeMint(
         address to,
-        bytes calldata contextIds,
+        address[] calldata contextIds,
         uint256 timestamp,
         uint8 v,
         bytes32 r,
@@ -87,16 +87,14 @@ contract SongADayPFPBuilder is
 
         _validate(contextIds, timestamp, v, r, s);
 
-        address[] memory members = _recoverAll(contextIds);
-
-        require(members.length > 0, "BID721: need 1 member to mint");
-        require(to == members[0], "to must match newest context");
+        require(contextIds.length > 0, "BID721: need 1 member to mint");
+        require(to == contextIds[0], "to must match newest context");
         require(to != address(0), "can not mint to zero address");
 
         uint256 balance;
-        for (uint256 i = 0; i < members.length; i++) {
-            if (members[i] != address(0)) {
-                balance += BID721.balanceOf(members[i]);
+        for (uint256 i = 0; i < contextIds.length; i++) {
+            if (contextIds[i] != address(0)) {
+                balance += BID721.balanceOf(contextIds[i]);
             }
         }
 

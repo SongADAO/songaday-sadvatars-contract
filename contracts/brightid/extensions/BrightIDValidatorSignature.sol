@@ -35,7 +35,7 @@ contract BrightIDValidatorSignature is BrightIDValidatorSingle {
      * - signer of signature must be a trusted validator.
      */
     function _validate(
-        bytes calldata contextIds,
+        address[] calldata contextIds,
         uint256 timestamp,
         uint8 v,
         bytes32 r,
