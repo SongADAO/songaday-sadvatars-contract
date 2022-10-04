@@ -309,26 +309,14 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorS
      * - length of `contextIds` must be greater than 1.
      * - at least one element in `contextIds` resolves to the owner address of token `tokenId`.
      */
-    function _lookup(
-        bytes calldata contextIds,
-        uint256 tokenId
-    ) internal view returns (address, address) {
+    function _lookup(bytes32[] calldata contextIds, uint256 tokenId) internal view returns (address, address) {
         address owner = ownerOf(tokenId);
-
-        address[] memory members = _recoverAll(contextIds);
-
-        require(members.length > 1, "BID721: need 2 members to rescue");
-
-        address to = members[0];
-
-        for (uint256 i = 1; i < members.length; i++) {
-            address from = members[i];
-            if (owner == from) {
-                return (from, to);
+        for (uint256 i = 1; i < contextIds.length; i++) {
+            if (owner == _uuidToAddress[hashUUID(contextIds[i])]) {
+                return (_uuidToAddress[hashUUID(contextIds[i])], _uuidToAddress[hashUUID(contextIds[0])]);
             }
         }
-
-        revert("BID721: no token to rescue");
+        revert("BrightIDSoulbound: no token to rescue");
     }
 
     /**
