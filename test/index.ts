@@ -706,13 +706,13 @@ describe("SongADayPFP", function () {
       const testContext =
         "0x736f756c626f756e640000000000000000000000000f000000000000ab000000";
       await token.connect(owner).setContext(testContext);
-      expect(await token.getContext()).to.equal(testContext);
+      expect(await token.context()).to.equal(testContext);
     });
 
     it("can set verifier", async function () {
       const testVerifier = bob.address;
       await token.connect(owner).setVerifier(testVerifier);
-      expect(await token.getVerifier()).to.equal(testVerifier);
+      expect(await token.verifier()).to.equal(testVerifier);
     });
   });
 
