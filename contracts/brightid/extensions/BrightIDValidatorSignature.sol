@@ -9,25 +9,22 @@ import "./../validator/BrightIDValidatorSingle.sol";
  */
 contract BrightIDValidatorSignature is BrightIDValidatorSingle {
     using ECDSA for bytes32;
-    using ECDSA for bytes;
 
-    bytes private _messageToSign;
-    bytes32 private _messageHash;
+    bytes private _soulboundMessage;
 
     constructor(
         address verifier_,
         bytes32 context_,
-        bytes memory messageToSign_
+        bytes memory soulboundMessage_
     ) BrightIDValidatorSingle(verifier_, context_) {
-        _messageToSign = messageToSign_;
-        _messageHash = messageToSign_.toEthSignedMessageHash();
+        _soulboundMessage = soulboundMessage_;
     }
 
     /**
-     * @dev Returns the message to be signed.
+     * @dev Returns the soulbound message.
      */
-    function messageToSign() public view virtual returns (string memory) {
-        return string(_messageToSign);
+    function soulboundMessage() public view virtual returns (string memory) {
+        return string(_soulboundMessage);
     }
 
     /**
