@@ -35,12 +35,12 @@ contract SongADayPFPBuilder is
     constructor(
         address verifier_,
         bytes32 context_,
-        bytes memory messageToSign_,
+        bytes memory soulboundMessage_,
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
         bytes4 baseTokenURIPrefix
-    ) BID721(verifier_, context_, messageToSign_, name, symbol) {
+    ) BID721(verifier_, context_, soulboundMessage_, name, symbol) {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);

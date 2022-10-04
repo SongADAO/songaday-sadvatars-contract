@@ -39,7 +39,7 @@ contract BID721 is Context, ERC165, IBID721, IBID721Metadata, BrightIDValidatorS
     /**
      * @dev Initializes the contract by setting a `name` and a `symbol` to the token collection.
      */
-    constructor(address verifier_, bytes32 context_, bytes memory messageToSign_, string memory name_, string memory symbol_) BrightIDValidatorSignature(verifier_, context_, messageToSign_) {
+    constructor(address verifier_, bytes32 context_, bytes memory soulboundMessage_, string memory name_, string memory symbol_) BrightIDValidatorSignature(verifier_, context_, soulboundMessage_) {
         _name = name_;
         _symbol = symbol_;
     }
