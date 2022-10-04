@@ -45,17 +45,4 @@ contract BrightIDValidatorSignature is BrightIDValidatorSingle {
         address signer = message.recover(v, r, s);
         require(isTrustedValidator(signer), "BrightIDValidatorSignature: Signer not authorized");
     }
-
-    function _recoverAll(bytes calldata contextIds) internal view virtual returns (address[] memory) {
-        uint256 length = contextIds.length / 65;
-        address[] memory members = new address[](length);
-        for (uint256 i = 0; i < length; i++) {
-            members[i] = _messageHash.recover(contextIds[i * 65:(i + 1) * 65]);
-        }
-        return members;
-    }
-
-    function _recoverAt(bytes calldata contextIds, uint256 index) internal view virtual returns (address) {
-        return _messageHash.recover(contextIds[index * 65:(index + 1) * 65]);
-    }
 }
