@@ -23,10 +23,10 @@ describe("SongADayPFP", function () {
   let brightidVerifier: any = null;
 
   const brightidContext: string =
-    "0x736f756c626f756e640000000000000000000000000000000000000000000000";
+    "0x536f6e674144414f000000000000000000000000000000000000000000000000";
 
   const brightidSignatureMessage: string =
-    "Only sign if you're creating a SoulboundDebug NFT for yourself!";
+    "Only sign if you're creating a SongADAO PFP for yourself!";
 
   const contractName: string = "SongADayPFPBuilder";
 
@@ -713,6 +713,15 @@ describe("SongADayPFP", function () {
       const testVerifier = bob.address;
       await token.connect(owner).setVerifier(testVerifier);
       expect(await token.verifier()).to.equal(testVerifier);
+    });
+  });
+
+  // BrightIDValidatorSignature
+  // ===========================================================================
+
+  describe("BrightIDValidatorSignature", function () {
+    it("has correct soulbound message", async function () {
+      expect(await token.soulboundMessage()).to.equal(brightidSignatureMessage);
     });
   });
 

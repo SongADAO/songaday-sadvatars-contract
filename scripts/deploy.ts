@@ -18,7 +18,7 @@ async function main() {
   const token = await contract.deploy(
     process.env.BRIGHTID_VERIFIER || "",
     process.env.BRIGHTID_CONTEXT || "",
-    process.env.BRIGHTID_SIGNATURE_MESSAGE || "",
+    ethers.utils.toUtf8Bytes(process.env.BRIGHTID_SIGNATURE_MESSAGE || ""),
     process.env.TOKEN_NAME || "",
     process.env.TOKEN_SYMBOL || "",
     process.env.TOKEN_BASE_URI || "",
