@@ -6,6 +6,10 @@
 import { ethers } from "hardhat";
 
 async function main() {
+  function strToByte32(str: string) {
+    return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
+  }
+
   // Hardhat always runs the compile task when running scripts with its command
   // line interface.
   //
@@ -17,7 +21,7 @@ async function main() {
   const contract = await ethers.getContractFactory("SongADayPFPBuilder");
   const token = await contract.deploy(
     process.env.BRIGHTID_VERIFIER || "",
-    process.env.BRIGHTID_CONTEXT || "",
+    strToByte32(process.env.BRIGHTID_CONTEXT || ""),
     ethers.utils.toUtf8Bytes(process.env.BRIGHTID_SIGNATURE_MESSAGE || ""),
     process.env.TOKEN_NAME || "",
     process.env.TOKEN_SYMBOL || "",

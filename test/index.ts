@@ -22,8 +22,8 @@ describe("SongADayPFP", function () {
 
   let brightidVerifier: any = null;
 
-  const brightidContext: string =
-    "0x536f6e674144414f000000000000000000000000000000000000000000000000";
+  // const brightidContext: string = "0x536f6e674144414f000000000000000000000000000000000000000000000000";
+  const brightidContext: string = "SongADAO";
 
   const brightidSignatureMessage: string =
     "Only sign if you're creating a SongADAO PFP for yourself!";
@@ -205,12 +205,12 @@ describe("SongADayPFP", function () {
 
     // const validateMessage = ethers.utils.solidityKeccak256(
     //   ["bytes32", "bytes32[]", "uint256"],
-    //   [brightidContext, contextIdsByte32, timestamp]
+    //   [strToByte32(brightidContext), contextIdsByte32, timestamp]
     // );
 
     const validateMessage = ethers.utils.solidityKeccak256(
       ["bytes32", "address[]", "uint256"],
-      [brightidContext, contextIds, timestamp]
+      [strToByte32(brightidContext), contextIds, timestamp]
     );
 
     // const validateSignature: string = await brightidVerifier.signMessage(
@@ -274,7 +274,7 @@ describe("SongADayPFP", function () {
 
     token = await contract.deploy(
       brightidVerifier.address,
-      brightidContext,
+      strToByte32(brightidContext),
       ethers.utils.toUtf8Bytes(brightidSignatureMessage),
       tokenName,
       tokenSymbol,
