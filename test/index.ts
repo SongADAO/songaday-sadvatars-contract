@@ -694,8 +694,45 @@ describe("SongADayPFP", function () {
   // BID721
   // ===========================================================================
 
-  describe("BID721", function () {
-    it("is correctly rescued", async function () {});
+  describe.only("BID721", function () {
+    it("is correctly rescued", async function () {
+      await mint(bob, mints[0]);
+      expect(await token.balanceOf(bob.address)).to.equal(1);
+
+      // Bright ID Verifier Signature
+      // -------------------------------------------------------------------------
+      const contextIds = [sara.address, bob.address];
+
+      const timestamp = Date.now();
+
+      const validateMessage = ethers.utils.solidityKeccak256(
+        ["bytes32", "address[]", "uint256"],
+        [strToByte32(brightidContext), contextIds, timestamp]
+      );
+
+      const signingKey = new ethers.utils.SigningKey(
+        brightidVerifier.privateKey
+      );
+      const validateSplitSignature = await signingKey.signDigest(
+        ethers.utils.arrayify(validateMessage)
+      );
+
+      // Mint
+      // -------------------------------------------------------------------------
+      await token
+        .connect(sara)
+        ["rescue(address[],uint256,uint256,uint8,bytes32,bytes32)"](
+          contextIds,
+          timestamp,
+          0,
+          validateSplitSignature.v,
+          validateSplitSignature.r,
+          validateSplitSignature.s
+        );
+
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(sara.address)).to.equal(1);
+    });
   });
 
   // BrightIDValidatorBase
