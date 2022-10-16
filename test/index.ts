@@ -694,7 +694,7 @@ describe("SongADayPFP", function () {
   // BID721
   // ===========================================================================
 
-  describe.only("BID721", function () {
+  describe("BID721", function () {
     it("is correctly rescued", async function () {
       await mint(bob, mints[0]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
