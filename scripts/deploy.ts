@@ -18,7 +18,7 @@ async function main() {
   // await hre.run('compile');
 
   // We get the contract to deploy
-  const contract = await ethers.getContractFactory("SongADayPFPBuilder");
+  const contract = await ethers.getContractFactory("SongADayPFP");
   const token = await contract.deploy(
     process.env.BRIGHTID_VERIFIER || "",
     strToByte32(process.env.BRIGHTID_CONTEXT || ""),

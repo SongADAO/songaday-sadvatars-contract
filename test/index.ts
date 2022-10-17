@@ -28,7 +28,7 @@ describe("SongADayPFP", function () {
   const brightidSignatureMessage: string =
     "Only sign if you're creating a SongADAO PFP for yourself!";
 
-  const contractName: string = "SongADayPFPBuilder";
+  const contractName: string = "SongADayPFP";
 
   const tokenName: string = "SongADayPFP";
 

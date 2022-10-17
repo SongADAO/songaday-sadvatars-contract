@@ -13,7 +13,7 @@ import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "./extensions/CustomAttributeAndURI.sol";
 
 /// @custom:security-contact alanparty@protonmail.com
-contract SongADayPFPBuilder is
+contract SongADayPFP is
     AccessControl,
     BID721,
     BID721Enumerable,
