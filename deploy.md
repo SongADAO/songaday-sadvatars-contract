@@ -18,3 +18,6 @@ ipfs://b
 
 # baseTokenURIPrefix
 0x01551220
+
+# minter
+0xb61874e816Afd59d11E1db3419F3C29b06Ee18d3
