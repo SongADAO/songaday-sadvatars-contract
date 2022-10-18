@@ -19,16 +19,16 @@ async function main() {
     "0x0c4f432f54f7577b70FA18a03CF0641227C6193e"
   );
 
-  await token.setMaxPerWallet(1);
+  // await token.setMaxPerWallet(1);
 
-  const minterAddress = process.env.MINTER_ADDRESS || "";
-  if (minterAddress) {
-    const minterRoleParam = ethers.utils.keccak256(
-      ethers.utils.toUtf8Bytes("MINTER_ROLE")
-    );
+  // const minterAddress = process.env.MINTER_ADDRESS || "";
+  // if (minterAddress) {
+  //   const minterRoleParam = ethers.utils.keccak256(
+  //     ethers.utils.toUtf8Bytes("MINTER_ROLE")
+  //   );
 
-    await token.grantRole(minterRoleParam, minterAddress);
-  }
+  //   await token.grantRole(minterRoleParam, minterAddress);
+  // }
 
   console.log("Contract setup complete");
 }

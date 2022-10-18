@@ -39,13 +39,14 @@ contract SongADayPFP is
         string memory name,
         string memory symbol,
         string memory baseTokenURI,
-        bytes4 baseTokenURIPrefix
+        bytes4 baseTokenURIPrefix,
+        address minter
     ) BID721(verifier_, context_, soulboundMessage_, name, symbol) {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(PAUSER_ROLE, msg.sender);
-        _grantRole(MINTER_ROLE, msg.sender);
+        _grantRole(MINTER_ROLE, minter);
     }
 
     function _baseURI() internal view virtual override returns (string memory) {

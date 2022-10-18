@@ -3,6 +3,9 @@ import { ethers } from "hardhat";
 // import * as base32 from "hi-base32";
 
 describe("SongADayPFP", function () {
+  const minterAddress = process.env.MINTER_ADDRESS || "";
+  const minterPrivateKey = process.env.MINTER_PRIVATE_KEY || "";
+
   // let token: Contract = null;
   let token: any = null;
 
@@ -189,7 +192,11 @@ describe("SongADayPFP", function () {
         params.tokenAttribute
       );
 
-    const signature: string = await owner.signMessage(
+    // const signature: string = await owner.signMessage(
+    //   ethers.utils.arrayify(tokenURIAndAttributeHash)
+    // );
+    const wallet = new ethers.Wallet(minterPrivateKey);
+    const signature: string = await wallet.signMessage(
       ethers.utils.arrayify(tokenURIAndAttributeHash)
     );
 
@@ -253,7 +260,11 @@ describe("SongADayPFP", function () {
         params.tokenAttribute
       );
 
-    const signature: string = await owner.signMessage(
+    // const signature: string = await owner.signMessage(
+    //   ethers.utils.arrayify(tokenURIAndAttributeHash)
+    // );
+    const wallet = new ethers.Wallet(minterPrivateKey);
+    const signature: string = await wallet.signMessage(
       ethers.utils.arrayify(tokenURIAndAttributeHash)
     );
 
@@ -279,7 +290,8 @@ describe("SongADayPFP", function () {
       tokenName,
       tokenSymbol,
       baseTokenURI,
-      baseTokenURIPrefix
+      baseTokenURIPrefix,
+      minterAddress
     );
 
     [owner, bob, jane, sara] = await ethers.getSigners();
@@ -323,6 +335,14 @@ describe("SongADayPFP", function () {
   // ===========================================================================
 
   describe("ERC721", function () {
+    // it("debugs", async function () {
+    //   console.log(strToByte32(brightidContext));
+
+    //   console.log(ethers.utils.hexZeroPad('0x01551220', 32));
+
+    //   console.log(ethers.utils.toUtf8Bytes(brightidSignatureMessage));
+    // });
+
     it("returns correct balanceOf", async function () {
       await mint(bob, mints[0]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
@@ -505,6 +525,7 @@ describe("SongADayPFP", function () {
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
       expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
 
+      await token.connect(owner).setMaxPerWallet(2);
       await mint(bob, mints[2]);
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
       expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
