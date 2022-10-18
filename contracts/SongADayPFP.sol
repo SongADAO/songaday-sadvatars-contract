@@ -29,7 +29,7 @@ contract SongADayPFP is
 
     string private _baseTokenURI;
 
-    uint256 private _maxPerWallet = 2**256 - 1;
+    uint256 private _maxPerWallet = 1;
     uint256 private _maxSupply = 2**256 - 1;
 
     constructor(
