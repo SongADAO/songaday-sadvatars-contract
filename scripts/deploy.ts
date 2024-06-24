@@ -20,14 +20,11 @@ async function main() {
   // We get the contract to deploy
   const contract = await ethers.getContractFactory("SongADayPFP");
   const token = await contract.deploy(
-    process.env.BRIGHTID_VERIFIER || "",
-    strToByte32(process.env.BRIGHTID_CONTEXT || ""),
-    ethers.utils.toUtf8Bytes(process.env.BRIGHTID_SIGNATURE_MESSAGE || ""),
-    process.env.TOKEN_NAME || "",
-    process.env.TOKEN_SYMBOL || "",
     process.env.TOKEN_BASE_URI || "",
     process.env.TOKEN_BASE_URI_PREFIX || "",
-    process.env.MINTER_ADDRESS || ""
+    process.env.MINTER_ADDRESS || "",
+    process.env.MINTER_ADDRESS || "",
+    process.env.MINTER_ADDRESS || "",
   );
 
   await token.deployed();
