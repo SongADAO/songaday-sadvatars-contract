@@ -1,15 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.9;
 
-// import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "../BID721/BID721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./DecodeSegmentedURI.sol";
 
-import "hardhat/console.sol";
-
 /// @custom:security-contact alanparty@protonmail.com
-abstract contract CustomAttributeAndURI is BID721, DecodeSegmentedURI {
+abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
     using ECDSA for bytes32;
 
     bytes4 internal _baseTokenURIPrefix;
@@ -116,19 +113,6 @@ abstract contract CustomAttributeAndURI is BID721, DecodeSegmentedURI {
         _tokenAttributes[tokenId] = inputTokenAttribute;
         _tokenAttributesToTokenIds[inputTokenAttribute] = tokenId;
     }
-
-    // function _burn(uint256 tokenId) internal virtual override {
-    //     super._burn(tokenId);
-
-    //     if (_tokenURIs[tokenId].length != 0) {
-    //         delete _tokenURIs[tokenId];
-    //     }
-
-    //     if (_tokenAttributes[tokenId] != 0) {
-    //         delete _tokenAttributesToTokenIds[_tokenAttributes[tokenId]];
-    //         delete _tokenAttributes[tokenId];
-    //     }
-    // }
 
     function _baseURIPrefix() internal view virtual returns (bytes4) {
         return _baseTokenURIPrefix;
