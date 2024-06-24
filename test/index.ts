@@ -80,10 +80,6 @@ describe("SongADayPFP", function () {
     return ipfsHashBase16Bytes32;
   }
 
-  function strToByte32(str: string) {
-    return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
-  }
-
   async function mint(minter: any, params: any) {
     // token URI and Attribute Hash Authorization Signature
     // -------------------------------------------------------------------------
