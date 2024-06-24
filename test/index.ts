@@ -23,14 +23,6 @@ describe("SongADayPFP", function () {
 
   const ZeroAddress: string = "0x0000000000000000000000000000000000000000";
 
-  let brightidVerifier: any = null;
-
-  // const brightidContext: string = "0x536f6e674144414f000000000000000000000000000000000000000000000000";
-  const brightidContext: string = "SongADAO";
-
-  const brightidSignatureMessage: string =
-    "Only sign if you're creating a SongADAO PFP for yourself!";
-
   const contractName: string = "SongADayPFP";
 
   const tokenName: string = "SongADayPFP";
@@ -75,68 +67,6 @@ describe("SongADayPFP", function () {
     },
   ];
 
-  // let binds: any = {};
-
-  // it("base test", async function () {
-  //   const b32 = "afkreih6vgjrirrhhk6trp7jgfspudz5ahkk5gkv6n77hhkrb3jg5anvri";
-
-  //   const b16 =
-  //     "01551220fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a";
-  //     // "fea9931446273abd38bfe93164fa0f3d01d4ae9955f37ff39d510ed26e81b58a";
-  //   console.log(b16);
-
-  //   const b16Bytes = hexToBytes(b16);
-  //   console.log(b16Bytes);
-
-  //   const b32Encoded = base32.encode(b16Bytes);
-  //   console.log(b32Encoded.toLowerCase());
-  // });
-
-  // it("correctly assigns metadata URI to NFT", async function () {
-  //   await mint(bob, mints[0]);
-
-  //   expect(await token.tokenURI(0)).to.equal(
-  //     `${baseTokenURI}${mints[0].tokenURI}`
-  //   );
-  // });
-
-  // function hexToBytes(hex: string) {
-  //   for (var bytes = [], c = 0; c < hex.length; c += 2) {
-  //     bytes.push(parseInt(hex.substr(c, 2), 16));
-  //   }
-
-  //   return bytes;
-  // }
-
-  // function toHexString(byteArray: any) {
-  //   return Array.from(byteArray, (byte: any) => {
-  //     return ("0" + (byte & 0xff).toString(16)).slice(-2);
-  //   }).join("");
-  // }
-
-  // function ipfsToBase16(ipfsHash: string): string {
-  //   const ipfsHashUpper: string = ipfsHash.toUpperCase();
-
-  //   if (!ipfsHashUpper.startsWith("B")) {
-  //     throw new Error("Invalid IPFS Hash Prefix");
-  //   }
-
-  //   const ipfsHashUpperNoPrefix: string = ipfsHashUpper.substring(1);
-
-  //   const ipfsHashUpperNoPrefixBytes = base32.decode.asBytes(
-  //     ipfsHashUpperNoPrefix
-  //   );
-
-  //   const ipfsHashBase16: string =
-  //     "f" + toHexString(ipfsHashUpperNoPrefixBytes).toLowerCase();
-
-  //   return ipfsHashBase16;
-  // }
-
-  // function ipfsToBytes32(ipfsHash: string): string {
-  //   return ipfsBase16ToBytes32(ipfsToBase16(ipfsHash));
-  // }
-
   function ipfsBase16ToBytes32(ipfsHashBase16: string): string {
     const ipfsHashBase16Upper = ipfsHashBase16.toUpperCase();
 
@@ -154,34 +84,7 @@ describe("SongADayPFP", function () {
     return "0x" + Buffer.from(str).toString("hex").padEnd(64, "0");
   }
 
-  // async function bind(minter: any, params: any) {
-  //   return await token.connect(minter).bind(minter.address, params.uuidHash);
-  // }
-
-  // async function bindViaRelay(minter: any, params: any) {
-  //   const hashToBind: string = await token.getUUIDHash(
-  //     minter.address,
-  //     params.uuidHash,
-  //     params.nonce
-  //   );
-
-  //   const bid721Signature: string = await minter.signMessage(
-  //     ethers.utils.arrayify(hashToBind)
-  //   );
-
-  //   return await token
-  //     .connect(minter)
-  //     .bind(minter.address, params.uuidHash, params.nonce, bid721Signature);
-  // }
-
   async function mint(minter: any, params: any) {
-    // const uuid = binds[minter.address].uuid;
-
-    // if (binds[minter.address].isBound === false) {
-    //   await bind(minter, binds[minter.address]);
-    //   binds[minter.address].isBound = true;
-    // }
-
     // token URI and Attribute Hash Authorization Signature
     // -------------------------------------------------------------------------
     const tokenURIAndAttributeHash = await token
@@ -192,55 +95,15 @@ describe("SongADayPFP", function () {
         params.tokenAttribute
       );
 
-    // const signature: string = await owner.signMessage(
-    //   ethers.utils.arrayify(tokenURIAndAttributeHash)
-    // );
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
       ethers.utils.arrayify(tokenURIAndAttributeHash)
-    );
-
-    // Bright ID Verifier Signature
-    // -------------------------------------------------------------------------
-    const contextIds = [minter.address];
-    // const contextIds = [uuid];
-    // const contextIdsByte32 = contextIds.map((contextId) => {
-    //   return strToByte32(contextId);
-    // });
-
-    const timestamp = Date.now();
-
-    // const validateMessage = ethers.utils.solidityKeccak256(
-    //   ["bytes32", "bytes32[]", "uint256"],
-    //   [strToByte32(brightidContext), contextIdsByte32, timestamp]
-    // );
-
-    const validateMessage = ethers.utils.solidityKeccak256(
-      ["bytes32", "address[]", "uint256"],
-      [strToByte32(brightidContext), contextIds, timestamp]
-    );
-
-    // const validateSignature: string = await brightidVerifier.signMessage(
-    //   ethers.utils.arrayify(validateMessage)
-    // );
-    // const validateSplitSignature =
-    //   ethers.utils.splitSignature(validateSignature);
-
-    const signingKey = new ethers.utils.SigningKey(brightidVerifier.privateKey);
-    const validateSplitSignature = await signingKey.signDigest(
-      ethers.utils.arrayify(validateMessage)
     );
 
     // Mint
     // -------------------------------------------------------------------------
     return await token.connect(minter).safeMint(
       minter.address,
-      // contextIdsByte32,
-      contextIds,
-      timestamp,
-      validateSplitSignature.v,
-      validateSplitSignature.r,
-      validateSplitSignature.s,
       ipfsBase16ToBytes32(params.ipfsHashBase16),
       params.tokenAttribute,
       signature
@@ -260,9 +123,6 @@ describe("SongADayPFP", function () {
         params.tokenAttribute
       );
 
-    // const signature: string = await owner.signMessage(
-    //   ethers.utils.arrayify(tokenURIAndAttributeHash)
-    // );
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
       ethers.utils.arrayify(tokenURIAndAttributeHash)
@@ -279,54 +139,17 @@ describe("SongADayPFP", function () {
   }
 
   beforeEach(async () => {
-    brightidVerifier = ethers.Wallet.createRandom();
-
     const contract = await ethers.getContractFactory(contractName);
 
     token = await contract.deploy(
-      brightidVerifier.address,
-      strToByte32(brightidContext),
-      ethers.utils.toUtf8Bytes(brightidSignatureMessage),
-      tokenName,
-      tokenSymbol,
       baseTokenURI,
       baseTokenURIPrefix,
+      minterAddress,
+      minterAddress,
       minterAddress
     );
 
     [owner, bob, jane, sara] = await ethers.getSigners();
-
-    // binds = {};
-
-    // binds[bob.address] = {
-    //   // isBound: false,
-    //   uuid: "this-is-a-test-uuid",
-    //   uuidHash:
-    //     "0xf773232c5d9bc1766462716540175b16f671670128904fa19a2fc7148fc45c68",
-    //   nonce: "1",
-    //   hashToBind:
-    //     "0xe7b84d2b267da91a808104c53c158dbb6a305599c8618632efa6325e512d96ea",
-    // };
-
-    // binds[jane.address] = {
-    //   // isBound: false,
-    //   uuid: "this-is-a-test-uuid2",
-    //   uuidHash:
-    //     "0xfea4821353fdd0be7c67040afb2a9801dce110f5d5efa11942aaa3e18254f5a7",
-    //   nonce: "2",
-    //   hashToBind:
-    //     "0x418e35b208685734a1da43ec2680894ef7da4acada7dcb756f667fd12c2968dc",
-    // };
-
-    // binds[sara.address] = {
-    //   // isBound: false,
-    //   uuid: "this-is-a-test-uuid3",
-    //   uuidHash:
-    //     "0x1199cccbed3ae9aa44135defe47a8ed29fc073e6567cf2c6b5e6f84c0bcb6cc9",
-    //   nonce: "3",
-    //   hashToBind:
-    //     "0x0fb9704d20174a85a28d71e360488b0237783d0d1c610473729758f94d29092d",
-    // };
 
     await token.deployed();
   });
@@ -335,24 +158,9 @@ describe("SongADayPFP", function () {
   // ===========================================================================
 
   describe("ERC721", function () {
-    // it("debugs", async function () {
-    //   console.log(strToByte32(brightidContext));
-
-    //   console.log(ethers.utils.hexZeroPad('0x01551220', 32));
-
-    //   console.log(ethers.utils.toUtf8Bytes(brightidSignatureMessage));
-    // });
-
     it("returns correct balanceOf", async function () {
       await mint(bob, mints[0]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
-
-      // await mint(bob, mints[1]);
-      // expect(await token.balanceOf(bob.address)).to.equal(2);
-
-      // await mint(sara, mints[2]);
-      // expect(await token.balanceOf(bob.address)).to.equal(2);
-      // expect(await token.balanceOf(sara.address)).to.equal(1);
 
       await mint(sara, mints[2]);
       expect(await token.balanceOf(bob.address)).to.equal(1);
@@ -378,89 +186,96 @@ describe("SongADayPFP", function () {
   // ===========================================================================
 
   describe("ERC721::transferable", function () {
-    // it("correctly grants an approval", async function () {
-    //   await mint(bob, mints[0]);
-    //   expect(await token.connect(bob).approve(sara.address, 0)).to.emit(
-    //     token,
-    //     "Approval"
-    //   );
-    //   expect(await token.getApproved(0)).to.equal(sara.address);
-    // });
-    // it("correctly revokes an approval", async function () {
-    //   await mint(bob, mints[0]);
-    //   await token.connect(bob).approve(sara.address, 0);
-    //   await token.connect(bob).approve(ZeroAddress, 0);
-    //   expect(await token.getApproved(0)).to.equal(ZeroAddress);
-    // });
-    // it("correctly grants an approval for all", async function () {
-    //   await mint(bob, mints[0]);
-    //   expect(
-    //     await token.connect(bob).setApprovalForAll(sara.address, true)
-    //   ).to.emit(token, "ApproveForAll");
-    //   expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-    //     true
-    //   );
-    // });
-    // it("correct revokes an approval for all", async function () {
-    //   await mint(bob, mints[0]);
-    //   await token.connect(bob).setApprovalForAll(sara.address, true);
-    //   await token.connect(bob).setApprovalForAll(sara.address, false);
-    //   expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-    //     false
-    //   );
-    // });
-    // it("correctly approves and transfers a specific NFT", async function () {
-    //   await mint(bob, mints[0]);
-    //   await token.connect(bob).approve(sara.address, 0);
-    //   await token.connect(sara).transferFrom(bob.address, jane.address, 0);
-    //   expect(await token.balanceOf(bob.address)).to.equal(0);
-    //   expect(await token.balanceOf(jane.address)).to.equal(1);
-    //   expect(await token.ownerOf(0)).to.equal(jane.address);
-    // });
-    // it("correctly approves and transfers multiple NFTs with an approval for all", async function () {
-    //   await token.connect(bob).setApprovalForAll(sara.address, true);
-    //   await mint(bob, mints[0]);
-    //   await token.connect(sara).transferFrom(bob.address, jane.address, 0);
-    //   await mint(bob, mints[1]);
-    //   await token.connect(sara).transferFrom(bob.address, jane.address, 1);
-    //   expect(await token.balanceOf(bob.address)).to.equal(0);
-    //   expect(await token.balanceOf(jane.address)).to.equal(2);
-    //   expect(await token.ownerOf(0)).to.equal(jane.address);
-    //   expect(await token.ownerOf(1)).to.equal(jane.address);
-    // });
-    // it("correctly approves and safely transfers a specific NFT", async function () {
-    //   await mint(bob, mints[0]);
-    //   await token.connect(bob).approve(sara.address, 0);
-    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
-    //   expect(await token.balanceOf(bob.address)).to.equal(0);
-    //   expect(await token.balanceOf(jane.address)).to.equal(1);
-    //   expect(await token.ownerOf(0)).to.equal(jane.address);
-    // });
-    // it("correctly approves and safely transfers multiple NFTs with an approval for all", async function () {
-    //   await token.connect(bob).setApprovalForAll(sara.address, true);
-    //   await mint(bob, mints[0]);
-    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
-    //   await mint(bob, mints[1]);
-    //   await token.connect(sara).safeTransferFrom(bob.address, jane.address, 1);
-    //   expect(await token.balanceOf(bob.address)).to.equal(0);
-    //   expect(await token.balanceOf(jane.address)).to.equal(2);
-    //   expect(await token.ownerOf(0)).to.equal(jane.address);
-    //   expect(await token.ownerOf(1)).to.equal(jane.address);
-    // });
+    it("correctly grants an approval", async function () {
+      await mint(bob, mints[0]);
+      expect(await token.connect(bob).approve(sara.address, 0)).to.emit(
+        token,
+        "Approval"
+      );
+      expect(await token.getApproved(0)).to.equal(sara.address);
+    });
+
+    it("correctly revokes an approval", async function () {
+      await mint(bob, mints[0]);
+      await token.connect(bob).approve(sara.address, 0);
+      await token.connect(bob).approve(ZeroAddress, 0);
+      expect(await token.getApproved(0)).to.equal(ZeroAddress);
+    });
+
+    it("correctly grants an approval for all", async function () {
+      await mint(bob, mints[0]);
+      expect(
+        await token.connect(bob).setApprovalForAll(sara.address, true)
+      ).to.emit(token, "ApproveForAll");
+      expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
+        true
+      );
+    });
+
+    it("correct revokes an approval for all", async function () {
+      await mint(bob, mints[0]);
+      await token.connect(bob).setApprovalForAll(sara.address, true);
+      await token.connect(bob).setApprovalForAll(sara.address, false);
+      expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
+        false
+      );
+    });
+
+    it("correctly approves and transfers a specific NFT", async function () {
+      await mint(bob, mints[0]);
+      await token.connect(bob).approve(sara.address, 0);
+      await token.connect(sara).transferFrom(bob.address, jane.address, 0);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(1);
+      expect(await token.ownerOf(0)).to.equal(jane.address);
+    });
+
+    it("correctly approves and transfers multiple NFTs with an approval for all", async function () {
+      await token.connect(bob).setApprovalForAll(sara.address, true);
+      await mint(bob, mints[0]);
+      await token.connect(sara).transferFrom(bob.address, jane.address, 0);
+      await mint(bob, mints[1]);
+      await token.connect(sara).transferFrom(bob.address, jane.address, 1);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(2);
+      expect(await token.ownerOf(0)).to.equal(jane.address);
+      expect(await token.ownerOf(1)).to.equal(jane.address);
+    });
+
+    it("correctly approves and safely transfers a specific NFT", async function () {
+      await mint(bob, mints[0]);
+      await token.connect(bob).approve(sara.address, 0);
+      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(1);
+      expect(await token.ownerOf(0)).to.equal(jane.address);
+    });
+
+    it("correctly approves and safely transfers multiple NFTs with an approval for all", async function () {
+      await token.connect(bob).setApprovalForAll(sara.address, true);
+      await mint(bob, mints[0]);
+      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 0);
+      await mint(bob, mints[1]);
+      await token.connect(sara).safeTransferFrom(bob.address, jane.address, 1);
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      expect(await token.balanceOf(jane.address)).to.equal(2);
+      expect(await token.ownerOf(0)).to.equal(jane.address);
+      expect(await token.ownerOf(1)).to.equal(jane.address);
+    });
   });
 
   // ERC721Burnable
   // ===========================================================================
 
   describe("ERC721Burnable", function () {
-    // it("correctly burns a NFT", async function () {
-    //   await mint(bob, mints[0]);
-    //   expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
-    //   expect(await token.balanceOf(bob.address)).to.equal(0);
-    //   await expect(token.ownerOf(0)).to.be.revertedWith(
-    //     "ERC721: owner query for nonexistent token"
-    //   );
-    // });
+    it("correctly burns a NFT", async function () {
+      await mint(bob, mints[0]);
+      expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
+      expect(await token.balanceOf(bob.address)).to.equal(0);
+      await expect(token.ownerOf(0)).to.be.revertedWith(
+        "ERC721: owner query for nonexistent token"
+      );
+    });
   });
 
   // ERC721Metadata
@@ -711,157 +526,4 @@ describe("SongADayPFP", function () {
       ).to.be.revertedWith("Pausable: paused");
     });
   });
-
-  // BID721
-  // ===========================================================================
-
-  describe("BID721", function () {
-    it("is correctly rescued", async function () {
-      await mint(bob, mints[0]);
-      expect(await token.balanceOf(bob.address)).to.equal(1);
-
-      // Bright ID Verifier Signature
-      // -------------------------------------------------------------------------
-      const contextIds = [sara.address, bob.address];
-
-      const timestamp = Date.now();
-
-      const validateMessage = ethers.utils.solidityKeccak256(
-        ["bytes32", "address[]", "uint256"],
-        [strToByte32(brightidContext), contextIds, timestamp]
-      );
-
-      const signingKey = new ethers.utils.SigningKey(
-        brightidVerifier.privateKey
-      );
-      const validateSplitSignature = await signingKey.signDigest(
-        ethers.utils.arrayify(validateMessage)
-      );
-
-      // Mint
-      // -------------------------------------------------------------------------
-      await token
-        .connect(sara)
-        ["rescue(address[],uint256,uint256,uint8,bytes32,bytes32)"](
-          contextIds,
-          timestamp,
-          0,
-          validateSplitSignature.v,
-          validateSplitSignature.r,
-          validateSplitSignature.s
-        );
-
-      expect(await token.balanceOf(bob.address)).to.equal(0);
-      expect(await token.balanceOf(sara.address)).to.equal(1);
-    });
-  });
-
-  // BrightIDValidatorBase
-  // ===========================================================================
-
-  describe("BrightIDValidatorBase", function () {
-    it("can set context", async function () {
-      const testContext =
-        "0x736f756c626f756e640000000000000000000000000f000000000000ab000000";
-      await token.connect(owner).setContext(testContext);
-      expect(await token.context()).to.equal(testContext);
-    });
-
-    it("can set verifier", async function () {
-      const testVerifier = bob.address;
-      await token.connect(owner).setVerifier(testVerifier);
-      expect(await token.verifier()).to.equal(testVerifier);
-    });
-  });
-
-  // BrightIDValidatorSignature
-  // ===========================================================================
-
-  describe("BrightIDValidatorSignature", function () {
-    it("has correct soulbound message", async function () {
-      expect(await token.soulboundMessage()).to.equal(brightidSignatureMessage);
-    });
-  });
-
-  // BrightIDValidatorOwnership
-  // ===========================================================================
-
-  // describe("BrightIDValidatorOwnership", function () {
-  //   // it("can hash uuid", async function () {
-  //   //   expect(
-  //   //     await token.hashUUID(strToByte32(binds[bob.address].uuid))
-  //   //   ).to.equal(binds[bob.address].uuidHash);
-  //   //   expect(
-  //   //     await token.hashUUID(strToByte32(binds[jane.address].uuid))
-  //   //   ).to.equal(binds[jane.address].uuidHash);
-  //   //   expect(
-  //   //     await token.hashUUID(strToByte32(binds[sara.address].uuid))
-  //   //   ).to.equal(binds[sara.address].uuidHash);
-  //   // });
-
-  //   // it("can get uuid hash", async function () {
-  //   //   expect(
-  //   //     await token.getUUIDHash(
-  //   //       bob.address,
-  //   //       binds[bob.address].uuidHash,
-  //   //       binds[bob.address].nonce
-  //   //     )
-  //   //   ).to.equal(binds[bob.address].hashToBind);
-
-  //   //   expect(
-  //   //     await token.getUUIDHash(
-  //   //       jane.address,
-  //   //       binds[jane.address].uuidHash,
-  //   //       binds[jane.address].nonce
-  //   //     )
-  //   //   ).to.equal(binds[jane.address].hashToBind);
-
-  //   //   expect(
-  //   //     await token.getUUIDHash(
-  //   //       sara.address,
-  //   //       binds[sara.address].uuidHash,
-  //   //       binds[sara.address].nonce
-  //   //     )
-  //   //   ).to.equal(binds[sara.address].hashToBind);
-  //   // });
-
-  //   // it("can bind", async function () {
-  //   //   expect(
-  //   //     await token.connect(bob).bind(bob.address, binds[bob.address].uuidHash)
-  //   //   ).to.emit(bob.address, "AddressBound");
-
-  //   //   expect(
-  //   //     await token.isBound(bob.address, binds[bob.address].uuidHash)
-  //   //   ).to.equal(true);
-  //   // });
-
-  //   // it("can not bind to other address", async function () {
-  //   //   await expect(
-  //   //     token.connect(sara).bind(bob.address, binds[bob.address].uuidHash)
-  //   //   ).to.be.revertedWith(
-  //   //     "BrightIDValidatorOwnership: Can only bind to sender address"
-  //   //   );
-  //   // });
-
-  //   // it("can bind via relay", async function () {
-  //   //   const signature: string = await bob.signMessage(
-  //   //     ethers.utils.arrayify(binds[bob.address].hashToBind)
-  //   //   );
-
-  //   //   expect(
-  //   //     await token
-  //   //       .connect(sara)
-  //   //       .bindViaRelay(
-  //   //         bob.address,
-  //   //         binds[bob.address].uuidHash,
-  //   //         binds[bob.address].nonce,
-  //   //         signature
-  //   //       )
-  //   //   ).to.emit(bob.address, "AddressBound");
-
-  //   //   expect(
-  //   //     await token.isBound(bob.address, binds[bob.address].uuidHash)
-  //   //   ).to.equal(true);
-  //   // });
-  // });
 });
