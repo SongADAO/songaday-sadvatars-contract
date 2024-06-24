@@ -2,13 +2,12 @@
 pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 import "./DecodeSegmentedURI.sol";
 
 /// @custom:security-contact alanparty@protonmail.com
 abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
-    using ECDSA for bytes32;
-
     bytes4 internal _baseTokenURIPrefix;
 
     // Maps token ids to their URIs
@@ -134,12 +133,14 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         bytes32 inputTokenAttribute,
         bytes calldata signature
     ) internal pure virtual returns (address) {
-        bytes32 message = getTokenURIAndAttributeHash(
+        bytes32 messageHash = getTokenURIAndAttributeHash(
             approvedAddress,
             inputTokenURI,
             inputTokenAttribute
         );
 
-        return message.toEthSignedMessageHash().recover(signature);
+        bytes32 messageHashBytes32 = MessageHashUtils.toEthSignedMessageHash(messageHash);
+
+        return ECDSA.recover(messageHashBytes32, signature);
     }
 }
