@@ -92,40 +92,42 @@ describe("SongADayPFP", function () {
       .getTokenURIAndAttributeHash(
         minter.address,
         ipfsBase16ToBytes32(params.ipfsHashBase16),
-        params.tokenAttribute
+        params.tokenAttribute,
       );
 
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
-      ethers.utils.arrayify(tokenURIAndAttributeHash)
+      ethers.utils.arrayify(tokenURIAndAttributeHash),
     );
 
     // Mint
     // -------------------------------------------------------------------------
-    return await token.connect(minter).safeMint(
-      minter.address,
-      ipfsBase16ToBytes32(params.ipfsHashBase16),
-      params.tokenAttribute,
-      signature
-    );
+    return await token
+      .connect(minter)
+      .safeMint(
+        minter.address,
+        ipfsBase16ToBytes32(params.ipfsHashBase16),
+        params.tokenAttribute,
+        signature,
+      );
   }
 
   async function changeTokenURIAndAttribute(
     minter: any,
     tokenId: number,
-    params: any
+    params: any,
   ) {
     const tokenURIAndAttributeHash = await token
       .connect(minter)
       .getTokenURIAndAttributeHash(
         minter.address,
         ipfsBase16ToBytes32(params.ipfsHashBase16),
-        params.tokenAttribute
+        params.tokenAttribute,
       );
 
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
-      ethers.utils.arrayify(tokenURIAndAttributeHash)
+      ethers.utils.arrayify(tokenURIAndAttributeHash),
     );
 
     return await token
@@ -134,7 +136,7 @@ describe("SongADayPFP", function () {
         tokenId,
         ipfsBase16ToBytes32(params.ipfsHashBase16),
         params.tokenAttribute,
-        signature
+        signature,
       );
   }
 
@@ -146,7 +148,7 @@ describe("SongADayPFP", function () {
       baseTokenURIPrefix,
       minterAddress,
       minterAddress,
-      minterAddress
+      minterAddress,
     );
 
     [owner, bob, jane, sara] = await ethers.getSigners();
@@ -190,7 +192,7 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
       expect(await token.connect(bob).approve(sara.address, 0)).to.emit(
         token,
-        "Approval"
+        "Approval",
       );
       expect(await token.getApproved(0)).to.equal(sara.address);
     });
@@ -205,10 +207,10 @@ describe("SongADayPFP", function () {
     it("correctly grants an approval for all", async function () {
       await mint(bob, mints[0]);
       expect(
-        await token.connect(bob).setApprovalForAll(sara.address, true)
+        await token.connect(bob).setApprovalForAll(sara.address, true),
       ).to.emit(token, "ApproveForAll");
       expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-        true
+        true,
       );
     });
 
@@ -217,7 +219,7 @@ describe("SongADayPFP", function () {
       await token.connect(bob).setApprovalForAll(sara.address, true);
       await token.connect(bob).setApprovalForAll(sara.address, false);
       expect(await token.isApprovedForAll(bob.address, sara.address)).to.equal(
-        false
+        false,
       );
     });
 
@@ -273,7 +275,7 @@ describe("SongADayPFP", function () {
       expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
       expect(await token.balanceOf(bob.address)).to.equal(0);
       await expect(token.ownerOf(0)).to.be.revertedWith(
-        "ERC721: owner query for nonexistent token"
+        "ERC721: owner query for nonexistent token",
       );
     });
   });
@@ -293,26 +295,26 @@ describe("SongADayPFP", function () {
     it("correctly assigns metadata URI to NFT", async function () {
       await mint(bob, mints[0]);
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
 
       await mint(jane, mints[1]);
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
       expect(await token.tokenURI(1)).to.equal(
-        `${baseTokenURI}${mints[1].tokenURI}`
+        `${baseTokenURI}${mints[1].tokenURI}`,
       );
 
       await mint(sara, mints[2]);
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
       expect(await token.tokenURI(1)).to.equal(
-        `${baseTokenURI}${mints[1].tokenURI}`
+        `${baseTokenURI}${mints[1].tokenURI}`,
       );
       expect(await token.tokenURI(2)).to.equal(
-        `${baseTokenURI}${mints[2].tokenURI}`
+        `${baseTokenURI}${mints[2].tokenURI}`,
       );
     });
   });
@@ -373,8 +375,8 @@ describe("SongADayPFP", function () {
           .getTokenURIAndAttributeHash(
             bob.address,
             ipfsBase16ToBytes32(mints[0].ipfsHashBase16),
-            mints[0].tokenAttribute
-          )
+            mints[0].tokenAttribute,
+          ),
       ).to.equal(mints[0].tokenURIAndAttributeHash);
 
       expect(
@@ -383,8 +385,8 @@ describe("SongADayPFP", function () {
           .getTokenURIAndAttributeHash(
             sara.address,
             ipfsBase16ToBytes32(mints[1].ipfsHashBase16),
-            mints[1].tokenAttribute
-          )
+            mints[1].tokenAttribute,
+          ),
       ).to.equal(mints[1].tokenURIAndAttributeHash);
 
       expect(
@@ -393,8 +395,8 @@ describe("SongADayPFP", function () {
           .getTokenURIAndAttributeHash(
             jane.address,
             ipfsBase16ToBytes32(mints[2].ipfsHashBase16),
-            mints[2].tokenAttribute
-          )
+            mints[2].tokenAttribute,
+          ),
       ).to.equal(mints[2].tokenURIAndAttributeHash);
     });
 
@@ -409,10 +411,10 @@ describe("SongADayPFP", function () {
       await mint(sara, mints[1]);
 
       expect(
-        await token.tokenAttributeTokenId(mints[0].tokenAttribute)
+        await token.tokenAttributeTokenId(mints[0].tokenAttribute),
       ).to.equal(0);
       expect(
-        await token.tokenAttributeTokenId(mints[1].tokenAttribute)
+        await token.tokenAttributeTokenId(mints[1].tokenAttribute),
       ).to.equal(1);
     });
 
@@ -420,7 +422,7 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
 
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
 
       expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
@@ -428,7 +430,7 @@ describe("SongADayPFP", function () {
       await changeTokenURIAndAttribute(bob, 0, mints[1]);
 
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[1].tokenURI}`
+        `${baseTokenURI}${mints[1].tokenURI}`,
       );
 
       expect(await token.tokenAttribute(0)).to.equal(mints[1].tokenAttribute);
@@ -438,13 +440,13 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
 
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
 
       expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
 
       await expect(
-        changeTokenURIAndAttribute(bob, 1, mints[1])
+        changeTokenURIAndAttribute(bob, 1, mints[1]),
       ).to.be.revertedWith("URI set of nonexistent token");
     });
 
@@ -452,13 +454,13 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
 
       expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`
+        `${baseTokenURI}${mints[0].tokenURI}`,
       );
 
       expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
 
       await expect(
-        changeTokenURIAndAttribute(sara, 0, mints[1])
+        changeTokenURIAndAttribute(sara, 0, mints[1]),
       ).to.be.revertedWith("URI set of unowned token");
     });
   });
@@ -476,13 +478,13 @@ describe("SongADayPFP", function () {
       await token.connect(owner).setMaxPerWallet(1);
       await mint(bob, mints[0]);
       await expect(mint(bob, mints[1])).to.be.revertedWith(
-        "has reached max per wallet"
+        "has reached max per wallet",
       );
 
       await token.connect(owner).setMaxPerWallet(2);
       await mint(bob, mints[1]);
       await expect(mint(bob, mints[2])).to.be.revertedWith(
-        "has reached max per wallet"
+        "has reached max per wallet",
       );
 
       await mint(sara, mints[2]);
@@ -493,7 +495,7 @@ describe("SongADayPFP", function () {
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
       await expect(mint(sara, mints[0])).to.be.revertedWith(
-        "attr already in use"
+        "attr already in use",
       );
     });
 
@@ -522,7 +524,7 @@ describe("SongADayPFP", function () {
       await token.connect(owner).pause();
 
       await expect(
-        changeTokenURIAndAttribute(bob, 0, mints[1])
+        changeTokenURIAndAttribute(bob, 0, mints[1]),
       ).to.be.revertedWith("Pausable: paused");
     });
   });
