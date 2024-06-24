@@ -27,7 +27,7 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         override
         returns (string memory)
     {
-        require(_exists(tokenId), "URI query on nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
 
         bytes32 thisTokenURI = _tokenURIs[tokenId];
         string memory base = _baseURI();
@@ -53,7 +53,7 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         virtual
         returns (bytes32)
     {
-        require(_exists(tokenId), "attr query on nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
 
         return _tokenAttributes[tokenId];
     }
@@ -95,7 +95,8 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         internal
         virtual
     {
-        require(_exists(tokenId), "URI set on nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+
         _tokenURIs[tokenId] = inputTokenURI;
     }
 
@@ -103,7 +104,8 @@ abstract contract CustomAttributeAndURI is ERC721, DecodeSegmentedURI {
         internal
         virtual
     {
-        require(_exists(tokenId), "attr set for nonexistent token");
+        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+
         require(inputTokenAttribute > 0, "attr can't be 0");
         require(
             !tokenAttributeExists(inputTokenAttribute),
