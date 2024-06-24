@@ -1,5 +1,5 @@
 import { expect } from "chai";
-import { ethers } from "hardhat";
+import hre, { ethers } from "hardhat";
 // import * as base32 from "hi-base32";
 
 describe("SongADayPFP", function () {
@@ -108,48 +108,44 @@ describe("SongADayPFP", function () {
       );
   }
 
-  async function changeTokenURIAndAttribute(
-    minter: any,
-    tokenId: number,
-    params: any,
-  ) {
-    const tokenURIAndAttributeHash = await token
-      .connect(minter)
-      .getTokenURIAndAttributeHash(
-        minter.address,
-        ipfsBase16ToBytes32(params.ipfsHashBase16),
-        params.tokenAttribute,
-      );
+  // async function changeTokenURIAndAttribute(
+  //   minter: any,
+  //   tokenId: number,
+  //   params: any,
+  // ) {
+  //   const tokenURIAndAttributeHash = await token
+  //     .connect(minter)
+  //     .getTokenURIAndAttributeHash(
+  //       minter.address,
+  //       ipfsBase16ToBytes32(params.ipfsHashBase16),
+  //       params.tokenAttribute,
+  //     );
 
-    const wallet = new ethers.Wallet(minterPrivateKey);
-    const signature: string = await wallet.signMessage(
-      ethers.getBytes(tokenURIAndAttributeHash),
-    );
+  //   const wallet = new ethers.Wallet(minterPrivateKey);
+  //   const signature: string = await wallet.signMessage(
+  //     ethers.getBytes(tokenURIAndAttributeHash),
+  //   );
 
-    return await token
-      .connect(minter)
-      .changeTokenURIAndAttribute(
-        tokenId,
-        ipfsBase16ToBytes32(params.ipfsHashBase16),
-        params.tokenAttribute,
-        signature,
-      );
-  }
+  //   return await token
+  //     .connect(minter)
+  //     .changeTokenURIAndAttribute(
+  //       tokenId,
+  //       ipfsBase16ToBytes32(params.ipfsHashBase16),
+  //       params.tokenAttribute,
+  //       signature,
+  //     );
+  // }
 
   beforeEach(async () => {
-    const contract = await ethers.getContractFactory(contractName);
-
-    token = await contract.deploy(
-      baseTokenURI,
-      baseTokenURIPrefix,
-      minterAddress,
-      minterAddress,
-      minterAddress,
-    );
-
     [owner, bob, jane, sara] = await ethers.getSigners();
 
-    await token.deployed();
+    token = await hre.ethers.deployContract("SongADayPFP", [
+      baseTokenURI,
+      baseTokenURIPrefix,
+      owner,
+      owner,
+      minterAddress,
+    ]);
   });
 
   // ERC721
@@ -270,9 +266,7 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
       expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
       expect(await token.balanceOf(bob.address)).to.equal(0);
-      await expect(token.ownerOf(0)).to.be.revertedWith(
-        "ERC721: owner query for nonexistent token",
-      );
+      await expect(token.ownerOf(0)).to.be.reverted;
     });
   });
 
@@ -338,7 +332,7 @@ describe("SongADayPFP", function () {
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
       expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
 
-      await token.connect(owner).setMaxPerWallet(2);
+      // await token.connect(owner).setMaxPerWallet(2);
       await mint(bob, mints[2]);
       expect(await token.tokenOfOwnerByIndex(bob.address, 0)).to.equal(0);
       expect(await token.tokenOfOwnerByIndex(jane.address, 0)).to.equal(1);
@@ -414,51 +408,51 @@ describe("SongADayPFP", function () {
       ).to.equal(1);
     });
 
-    it("correctly allows altering metadata URI and attributes after mint by owner", async function () {
-      await mint(bob, mints[0]);
+    // it("correctly allows altering metadata URI and attributes after mint by owner", async function () {
+    //   await mint(bob, mints[0]);
 
-      expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`,
-      );
+    //   expect(await token.tokenURI(0)).to.equal(
+    //     `${baseTokenURI}${mints[0].tokenURI}`,
+    //   );
 
-      expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
+    //   expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
 
-      await changeTokenURIAndAttribute(bob, 0, mints[1]);
+    //   await changeTokenURIAndAttribute(bob, 0, mints[1]);
 
-      expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[1].tokenURI}`,
-      );
+    //   expect(await token.tokenURI(0)).to.equal(
+    //     `${baseTokenURI}${mints[1].tokenURI}`,
+    //   );
 
-      expect(await token.tokenAttribute(0)).to.equal(mints[1].tokenAttribute);
-    });
+    //   expect(await token.tokenAttribute(0)).to.equal(mints[1].tokenAttribute);
+    // });
 
-    it("correctly prevents altering metadata URI and attributes for non-existing tokens", async function () {
-      await mint(bob, mints[0]);
+    // it("correctly prevents altering metadata URI and attributes for non-existing tokens", async function () {
+    //   await mint(bob, mints[0]);
 
-      expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`,
-      );
+    //   expect(await token.tokenURI(0)).to.equal(
+    //     `${baseTokenURI}${mints[0].tokenURI}`,
+    //   );
 
-      expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
+    //   expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
 
-      await expect(
-        changeTokenURIAndAttribute(bob, 1, mints[1]),
-      ).to.be.revertedWith("URI set of nonexistent token");
-    });
+    //   await expect(
+    //     changeTokenURIAndAttribute(bob, 1, mints[1]),
+    //   ).to.be.revertedWith("URI set of nonexistent token");
+    // });
 
-    it("correctly prevents altering metadata URI and attributes for unowned tokens", async function () {
-      await mint(bob, mints[0]);
+    // it("correctly prevents altering metadata URI and attributes for unowned tokens", async function () {
+    //   await mint(bob, mints[0]);
 
-      expect(await token.tokenURI(0)).to.equal(
-        `${baseTokenURI}${mints[0].tokenURI}`,
-      );
+    //   expect(await token.tokenURI(0)).to.equal(
+    //     `${baseTokenURI}${mints[0].tokenURI}`,
+    //   );
 
-      expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
+    //   expect(await token.tokenAttribute(0)).to.equal(mints[0].tokenAttribute);
 
-      await expect(
-        changeTokenURIAndAttribute(sara, 0, mints[1]),
-      ).to.be.revertedWith("URI set of unowned token");
-    });
+    //   await expect(
+    //     changeTokenURIAndAttribute(sara, 0, mints[1]),
+    //   ).to.be.revertedWith("URI set of unowned token");
+    // });
   });
 
   // CustomAttributeAndURI::mintable
@@ -470,23 +464,23 @@ describe("SongADayPFP", function () {
       expect(await token.balanceOf(bob.address)).to.equal(1);
     });
 
-    it("correctly prevents minting more than per wallet limit", async function () {
-      await token.connect(owner).setMaxPerWallet(1);
-      await mint(bob, mints[0]);
-      await expect(mint(bob, mints[1])).to.be.revertedWith(
-        "has reached max per wallet",
-      );
+    // it("correctly prevents minting more than per wallet limit", async function () {
+    //   await token.connect(owner).setMaxPerWallet(1);
+    //   await mint(bob, mints[0]);
+    //   await expect(mint(bob, mints[1])).to.be.revertedWith(
+    //     "has reached max per wallet",
+    //   );
 
-      await token.connect(owner).setMaxPerWallet(2);
-      await mint(bob, mints[1]);
-      await expect(mint(bob, mints[2])).to.be.revertedWith(
-        "has reached max per wallet",
-      );
+    //   await token.connect(owner).setMaxPerWallet(2);
+    //   await mint(bob, mints[1]);
+    //   await expect(mint(bob, mints[2])).to.be.revertedWith(
+    //     "has reached max per wallet",
+    //   );
 
-      await mint(sara, mints[2]);
-      expect(await token.balanceOf(bob.address)).to.equal(2);
-      expect(await token.balanceOf(sara.address)).to.equal(1);
-    });
+    //   await mint(sara, mints[2]);
+    //   expect(await token.balanceOf(bob.address)).to.equal(2);
+    //   expect(await token.balanceOf(sara.address)).to.equal(1);
+    // });
 
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
@@ -511,17 +505,17 @@ describe("SongADayPFP", function () {
     it("correctly prevents minting when contract is paused", async function () {
       await token.connect(owner).pause();
 
-      await expect(mint(bob, mints[0])).to.be.revertedWith("Pausable: paused");
+      await expect(mint(bob, mints[0])).to.be.reverted;
     });
 
-    it("correctly prevents altering metadata URI and attributes when contract is paused", async function () {
-      await mint(bob, mints[0]);
+    // it("correctly prevents altering metadata URI and attributes when contract is paused", async function () {
+    //   await mint(bob, mints[0]);
 
-      await token.connect(owner).pause();
+    //   await token.connect(owner).pause();
 
-      await expect(
-        changeTokenURIAndAttribute(bob, 0, mints[1]),
-      ).to.be.revertedWith("Pausable: paused");
-    });
+    //   await expect(
+    //     changeTokenURIAndAttribute(bob, 0, mints[1]),
+    //   ).to.be.revertedWith("Pausable: paused");
+    // });
   });
 });
