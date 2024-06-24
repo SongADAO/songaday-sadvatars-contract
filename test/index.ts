@@ -97,7 +97,7 @@ describe("SongADayPFP", function () {
 
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
-      ethers.utils.arrayify(tokenURIAndAttributeHash),
+      ethers.getBytes(tokenURIAndAttributeHash),
     );
 
     // Mint
@@ -127,7 +127,7 @@ describe("SongADayPFP", function () {
 
     const wallet = new ethers.Wallet(minterPrivateKey);
     const signature: string = await wallet.signMessage(
-      ethers.utils.arrayify(tokenURIAndAttributeHash),
+      ethers.getBytes(tokenURIAndAttributeHash),
     );
 
     return await token
