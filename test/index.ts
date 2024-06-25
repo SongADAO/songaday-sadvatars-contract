@@ -10,8 +10,11 @@ async function getGasSpent(tx: any): Promise<bigint> {
 }
 
 describe("SongADayPFP", function () {
-  const minterAddress = process.env.MINTER_ADDRESS || "";
-  const minterPrivateKey = process.env.MINTER_PRIVATE_KEY || "";
+  const minterAddress = "0x633f74dBEAF851411be51E116019CAA6342257Ab";
+
+  const minterPrivateKey =
+    "3642bed090a5f3b3fa4a84bb14fd5165fb23acba26f32f2f16b668de75c31020";
+
   const invalidMinterPrivateKey =
     "0eace01ed992ed1de38f7cb6da632ba5ad1665c6b3ac86487583f90a991ca33a";
 
@@ -625,7 +628,8 @@ describe("SongADayPFP", function () {
         const beneficiaryBalanceAfterWithdraw =
           await ethers.provider.getBalance(beneficiary);
 
-        const ownerBalanceAfterWithdraw = await ethers.provider.getBalance(owner);
+        const ownerBalanceAfterWithdraw =
+          await ethers.provider.getBalance(owner);
 
         const contractBalanceAfterWithdraw =
           await ethers.provider.getBalance(token);

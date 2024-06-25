@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "deploy-dev-localhost": "hardhat run --network localhost scripts/deploy-dev.ts",
+    "deploy-prod-localhost": "hardhat run --network localhost scripts/deploy-dev.ts",
+    "deploy-dev-sepolia": "hardhat run --network sepolia scripts/deploy-dev.ts",
+    "deploy-prod-sepolia": "hardhat run --network sepolia scripts/deploy-dev.ts",
+    "hardhat": "hardhat",
+    "test": "hardhat test"
   },
   "author": "",
   "license": "MIT",
