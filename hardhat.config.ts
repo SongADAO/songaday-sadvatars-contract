@@ -15,7 +15,7 @@ const config: HardhatUserConfig = {
     enabled: process.env.REPORT_GAS !== undefined,
     currency: "USD",
     coinmarketcap: String(process.env.COINMARKETCAP_API_KEY),
-    gasPrice: 60,
+    gasPrice: 5,
   },
   networks: {
     localhost: {
