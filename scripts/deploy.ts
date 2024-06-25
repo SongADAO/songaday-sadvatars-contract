@@ -1,7 +1,7 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const tokenFactory = await ethers.getContractFactory("RRALTTP");
+  const tokenFactory = await ethers.getContractFactory("SongADayPFP");
 
   const token = await tokenFactory.deploy(
     process.env.TOKEN_BASE_URI || "",
