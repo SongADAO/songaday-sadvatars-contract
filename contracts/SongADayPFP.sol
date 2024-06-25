@@ -13,7 +13,7 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {OptimizedERC721URIStorage} from "./extensions/OptimizedERC721URIStorage.sol";
 import {TokenAttributes} from "./extensions/TokenAttributes.sol";
 
-error RequiresMinterRole();
+error RequiresMinterSignature();
 
 /// @custom:security-contact aLANparty@protonmail.com
 // contract SongADayPFP is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
@@ -107,7 +107,7 @@ contract SongADayPFP is
         );
 
         if (!hasRole(MINTER_ROLE, signer)) {
-            revert RequiresMinterRole();
+            revert RequiresMinterSignature();
         }
 
         _setTokenURI(tokenId, inputTokenURI);
