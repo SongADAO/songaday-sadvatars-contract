@@ -142,7 +142,7 @@ describe("SongADayPFP", function () {
   beforeEach(async () => {
     [owner, bob, jane, sara] = await ethers.getSigners();
 
-    token = await hre.ethers.deployContract("SongADayPFP", [
+    token = await hre.ethers.deployContract(contractName, [
       baseTokenURI,
       baseTokenURIPrefix,
       owner,
