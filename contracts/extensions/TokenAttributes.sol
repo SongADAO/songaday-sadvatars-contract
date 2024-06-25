@@ -12,23 +12,20 @@ abstract contract TokenAttributes is ERC721 {
     // Inverses the map of token ids to attributes
     mapping(bytes32 => uint256) private _tokenAttributesToTokenIds;
 
-    function tokenAttribute(uint256 tokenId)
-        public
-        view
-        virtual
-        returns (bytes32)
-    {
-        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+    function tokenAttribute(
+        uint256 tokenId
+    ) public view virtual returns (bytes32) {
+        require(
+            _ownerOf(tokenId) != address(0),
+            "ERC721: URI query for nonexistent token"
+        );
 
         return _tokenAttributes[tokenId];
     }
 
-    function tokenAttributeTokenId(bytes32 inputTokenAttribute)
-        public
-        view
-        virtual
-        returns (uint256)
-    {
+    function tokenAttributeTokenId(
+        bytes32 inputTokenAttribute
+    ) public view virtual returns (uint256) {
         require(
             tokenAttributeExists(inputTokenAttribute),
             "id query on nonexistent attr"
@@ -37,12 +34,9 @@ abstract contract TokenAttributes is ERC721 {
         return _tokenAttributesToTokenIds[inputTokenAttribute];
     }
 
-    function tokenAttributeExists(bytes32 inputTokenAttribute)
-        public
-        view
-        virtual
-        returns (bool)
-    {
+    function tokenAttributeExists(
+        bytes32 inputTokenAttribute
+    ) public view virtual returns (bool) {
         return
             _tokenAttributes[_tokenAttributesToTokenIds[inputTokenAttribute]] ==
             inputTokenAttribute;
@@ -53,14 +47,24 @@ abstract contract TokenAttributes is ERC721 {
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute
     ) public pure virtual returns (bytes32) {
-        return keccak256(abi.encodePacked(approvedAddress, inputTokenURI, inputTokenAttribute));
+        return
+            keccak256(
+                abi.encodePacked(
+                    approvedAddress,
+                    inputTokenURI,
+                    inputTokenAttribute
+                )
+            );
     }
 
-    function _setTokenAttribute(uint256 tokenId, bytes32 inputTokenAttribute)
-        internal
-        virtual
-    {
-        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+    function _setTokenAttribute(
+        uint256 tokenId,
+        bytes32 inputTokenAttribute
+    ) internal virtual {
+        require(
+            _ownerOf(tokenId) != address(0),
+            "ERC721: URI query for nonexistent token"
+        );
 
         require(inputTokenAttribute > 0, "attr can't be 0");
         require(

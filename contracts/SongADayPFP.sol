@@ -15,7 +15,15 @@ import {TokenAttributes} from "./extensions/TokenAttributes.sol";
 
 /// @custom:security-contact aLANparty@protonmail.com
 // contract SongADayPFP is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
-contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes, OptimizedERC721URIStorage {
+contract SongADayPFP is
+    ERC721,
+    ERC721Enumerable,
+    ERC721Pausable,
+    AccessControl,
+    ERC721Burnable,
+    TokenAttributes,
+    OptimizedERC721URIStorage
+{
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 private _nextTokenId;
@@ -38,19 +46,21 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
         _grantRole(MINTER_ROLE, minter);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return "";
-    }
-
-    function setBaseTokenURIPrefix(bytes4 newBaseTokenURIPrefix) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setBaseTokenURIPrefix(
+        bytes4 newBaseTokenURIPrefix
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _baseTokenURIPrefix = newBaseTokenURIPrefix;
     }
 
-    function setBaseTokenURI(string memory newBaseTokenURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setBaseTokenURI(
+        string memory newBaseTokenURI
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         _baseTokenURI = newBaseTokenURI;
     }
 
-    function setBeneficiary(address newBeneficiary) public onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setBeneficiary(
+        address newBeneficiary
+    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
         beneficiary = newBeneficiary;
     }
 
@@ -80,23 +90,6 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
         );
     }
 
-    function _getTokenURIAndAttributeHashSigner(
-        address approvedAddress,
-        bytes32 inputTokenURI,
-        bytes32 inputTokenAttribute,
-        bytes calldata signature
-    ) internal pure virtual returns (address) {
-        bytes32 messageHash = getTokenURIAndAttributeHash(
-            approvedAddress,
-            inputTokenURI,
-            inputTokenAttribute
-        );
-
-        bytes32 messageHashBytes32 = MessageHashUtils.toEthSignedMessageHash(messageHash);
-
-        return ECDSA.recover(messageHashBytes32, signature);
-    }
-
     function _setTokenURIAndAttribute(
         uint256 tokenId,
         address approvedAddress,
@@ -111,15 +104,45 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
             signature
         );
 
-        require(hasRole(MINTER_ROLE, signer), "URI must be signed by mint role");
+        require(
+            hasRole(MINTER_ROLE, signer),
+            "URI must be signed by mint role"
+        );
 
         _setTokenURI(tokenId, inputTokenURI);
         _setTokenAttribute(tokenId, inputTokenAttribute);
     }
 
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "";
+    }
+
+    function _getTokenURIAndAttributeHashSigner(
+        address approvedAddress,
+        bytes32 inputTokenURI,
+        bytes32 inputTokenAttribute,
+        bytes calldata signature
+    ) internal pure virtual returns (address) {
+        bytes32 messageHash = getTokenURIAndAttributeHash(
+            approvedAddress,
+            inputTokenURI,
+            inputTokenAttribute
+        );
+
+        bytes32 messageHashBytes32 = MessageHashUtils.toEthSignedMessageHash(
+            messageHash
+        );
+
+        return ECDSA.recover(messageHashBytes32, signature);
+    }
+
     // The following functions are overrides required by Solidity.
 
-    function _update(address to, uint256 tokenId, address auth)
+    function _update(
+        address to,
+        uint256 tokenId,
+        address auth
+    )
         internal
         override(ERC721, ERC721Enumerable, ERC721Pausable)
         returns (address)
@@ -127,14 +150,16 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
         return super._update(to, tokenId, auth);
     }
 
-    function _increaseBalance(address account, uint128 value)
-        internal
-        override(ERC721, ERC721Enumerable)
-    {
+    function _increaseBalance(
+        address account,
+        uint128 value
+    ) internal override(ERC721, ERC721Enumerable) {
         super._increaseBalance(account, value);
     }
 
-    function tokenURI(uint256 tokenId)
+    function tokenURI(
+        uint256 tokenId
+    )
         public
         view
         override(ERC721, OptimizedERC721URIStorage)
@@ -152,7 +177,9 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
     //     return super.tokenURI(tokenId);
     // }
 
-    function supportsInterface(bytes4 interfaceId)
+    function supportsInterface(
+        bytes4 interfaceId
+    )
         public
         view
         override(ERC721, ERC721Enumerable, AccessControl)

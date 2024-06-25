@@ -6,11 +6,10 @@ pragma solidity ^0.8.24;
  */
 /// @custom:security-contact aLANparty@protonmail.com
 contract DecodeSegmentedURI {
-    function _combineURISegments(bytes4 segment1, bytes32 segment2)
-        internal
-        pure
-        returns (string memory combinedTokenURI)
-    {
+    function _combineURISegments(
+        bytes4 segment1,
+        bytes32 segment2
+    ) internal pure returns (string memory combinedTokenURI) {
         bytes memory combinedBytes = abi.encodePacked(segment1, segment2);
 
         (bytes30 digest1, bytes30 digest2) = _bytesToTwoBytes30(combinedBytes);
@@ -21,11 +20,10 @@ contract DecodeSegmentedURI {
         return string(bytes.concat(string1, string2));
     }
 
-    function _get5BitsAsUint(bytes30 input, uint8 position)
-        private
-        pure
-        returns (uint8)
-    {
+    function _get5BitsAsUint(
+        bytes30 input,
+        uint8 position
+    ) private pure returns (uint8) {
         bytes30 temp = input;
         temp = temp << (position * 5);
         bytes30 mask = 0xf80000000000000000000000000000000000000000000000000000000000;
@@ -43,11 +41,10 @@ contract DecodeSegmentedURI {
         return bytes1(conv + 24);
     }
 
-    function _bytes30ToString(bytes30 input, uint8 length)
-        private
-        pure
-        returns (bytes memory)
-    {
+    function _bytes30ToString(
+        bytes30 input,
+        uint8 length
+    ) private pure returns (bytes memory) {
         bytes memory bytesArray = new bytes(length);
         uint8 i = 0;
 
@@ -59,11 +56,9 @@ contract DecodeSegmentedURI {
         return bytesArray;
     }
 
-    function _bytesToTwoBytes30(bytes memory input)
-        private
-        pure
-        returns (bytes30 digest1, bytes30 digest2)
-    {
+    function _bytesToTwoBytes30(
+        bytes memory input
+    ) private pure returns (bytes30 digest1, bytes30 digest2) {
         uint256 i = 0;
         uint256 wordlength = input.length;
         uint256 midpoint = 30;

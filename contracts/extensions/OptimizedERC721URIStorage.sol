@@ -14,14 +14,13 @@ abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
     // Maps token ids to their URIs
     mapping(uint256 => bytes32) private _tokenURIs;
 
-    function tokenURI(uint256 tokenId)
-        public
-        view
-        virtual
-        override
-        returns (string memory)
-    {
-        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(
+            _ownerOf(tokenId) != address(0),
+            "ERC721: URI query for nonexistent token"
+        );
 
         bytes32 thisTokenURI = _tokenURIs[tokenId];
         string memory base = _baseTokenURI;
@@ -41,20 +40,21 @@ abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
         return super.tokenURI(tokenId);
     }
 
-    function _setTokenURI(uint256 tokenId, bytes32 inputTokenURI)
-        internal
-        virtual
-    {
-        require(_ownerOf(tokenId) != address(0), "ERC721: URI query for nonexistent token");
+    function _setTokenURI(
+        uint256 tokenId,
+        bytes32 inputTokenURI
+    ) internal virtual {
+        require(
+            _ownerOf(tokenId) != address(0),
+            "ERC721: URI query for nonexistent token"
+        );
 
         _tokenURIs[tokenId] = inputTokenURI;
     }
 
-    function _decodeTokenUri(bytes32 inputTokenURI)
-        internal
-        view
-        returns (string memory decodedTokenURI)
-    {
+    function _decodeTokenUri(
+        bytes32 inputTokenURI
+    ) internal view returns (string memory decodedTokenURI) {
         return _combineURISegments(_baseTokenURIPrefix, inputTokenURI);
     }
 }
