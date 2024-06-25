@@ -485,8 +485,9 @@ describe("SongADayPFP", function () {
 
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
-      await expect(mint(sara, mints[0])).to.be.revertedWith(
-        "attr already in use",
+      await expect(mint(sara, mints[0])).to.be.revertedWithCustomError(
+        token,
+        "TokenAttributeAlreadyExists",
       );
     });
 
@@ -506,7 +507,10 @@ describe("SongADayPFP", function () {
     it("correctly prevents minting when contract is paused", async function () {
       await token.connect(owner).pause();
 
-      await expect(mint(bob, mints[0])).to.be.reverted;
+      await expect(mint(bob, mints[0])).to.be.revertedWithCustomError(
+        token,
+        "EnforcedPause",
+      );
     });
 
     // it("correctly prevents altering metadata URI and attributes when contract is paused", async function () {
@@ -516,7 +520,10 @@ describe("SongADayPFP", function () {
 
     //   await expect(
     //     changeTokenURIAndAttribute(bob, 0, mints[1]),
-    //   ).to.be.revertedWith("Pausable: paused");
+    //   ).to.be.revertedWithCustomError(
+    //     token,
+    //     "EnforcedPause",
+    //   );
     // });
   });
 });
