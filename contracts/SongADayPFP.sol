@@ -53,7 +53,7 @@ contract SongADayPFP is
     }
 
     function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
-        if (beneficiary != address(0)) {
+        if (beneficiary == address(0)) {
             revert BeneficiaryNotSet();
         }
 
