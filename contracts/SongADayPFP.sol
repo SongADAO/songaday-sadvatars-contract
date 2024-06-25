@@ -14,20 +14,36 @@ contract SongADayPFP is ERC721, ERC721Enumerable, ERC721Pausable, AccessControl,
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     uint256 private _nextTokenId;
 
+    address public beneficiary;
+
     string private _baseTokenURI;
 
     constructor(
         string memory baseTokenURI,
         bytes4 baseTokenURIPrefix,
+        address initialBeneficiary,
         address defaultAdmin,
         address pauser,
         address minter
     ) ERC721("SongADayPFP", "SONGADAYPFP") {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
+        beneficiary = initialBeneficiary;
         _grantRole(DEFAULT_ADMIN_ROLE, defaultAdmin);
         _grantRole(PAUSER_ROLE, pauser);
         _grantRole(MINTER_ROLE, minter);
+    }
+
+    function setBaseTokenURI(string memory newBaseTokenURI) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseTokenURI = newBaseTokenURI;
+    }
+
+    function setBaseTokenURIPrefix(bytes4 newBaseTokenURIPrefix) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        _baseTokenURIPrefix = newBaseTokenURIPrefix;
+    }
+
+    function setBeneficiary(address newBeneficiary) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        beneficiary = newBeneficiary;
     }
 
     function _baseURI() internal view virtual override returns (string memory) {

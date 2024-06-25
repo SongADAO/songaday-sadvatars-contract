@@ -144,6 +144,7 @@ describe("SongADayPFP", function () {
       baseTokenURIPrefix,
       owner,
       owner,
+      owner,
       minterAddress,
     ]);
   });
