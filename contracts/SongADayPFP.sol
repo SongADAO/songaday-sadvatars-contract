@@ -15,6 +15,10 @@ import {TokenAttributes} from "./extensions/TokenAttributes.sol";
 
 error InvalidMinterSignature();
 
+error DonationTransferFailed();
+
+error BeneficiaryNotSet();
+
 /// @custom:security-contact aLANparty@protonmail.com
 // contract SongADayPFP is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
 contract SongADayPFP is
@@ -48,6 +52,17 @@ contract SongADayPFP is
         _grantRole(MINTER_ROLE, minter);
     }
 
+    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (beneficiary != address(0)) {
+            revert BeneficiaryNotSet();
+        }
+
+        (bool success, ) = beneficiary.call{value: address(this).balance}("");
+        if (!success) {
+            revert DonationTransferFailed();
+        }
+    }
+
     function setBaseTokenURIPrefix(
         bytes4 newBaseTokenURIPrefix
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
@@ -79,7 +94,7 @@ contract SongADayPFP is
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
-    ) public virtual whenNotPaused {
+    ) public virtual payable whenNotPaused {
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(to, tokenId);
@@ -114,6 +129,10 @@ contract SongADayPFP is
         _setTokenAttribute(tokenId, inputTokenAttribute);
     }
 
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "";
+    }
+
     function _getTokenURIAndAttributeHashSigner(
         address approvedAddress,
         bytes32 inputTokenURI,
@@ -133,11 +152,8 @@ contract SongADayPFP is
         return ECDSA.recover(messageHashBytes32, signature);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return "";
-    }
-
     // The following functions are overrides required by Solidity.
+    // solhint-disable ordering, func-order
 
     function _update(
         address to,
