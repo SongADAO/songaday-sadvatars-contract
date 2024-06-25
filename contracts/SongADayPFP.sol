@@ -13,6 +13,8 @@ import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/Messa
 import {OptimizedERC721URIStorage} from "./extensions/OptimizedERC721URIStorage.sol";
 import {TokenAttributes} from "./extensions/TokenAttributes.sol";
 
+error RequiresMinterRole();
+
 /// @custom:security-contact aLANparty@protonmail.com
 // contract SongADayPFP is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
 contract SongADayPFP is
@@ -104,10 +106,9 @@ contract SongADayPFP is
             signature
         );
 
-        require(
-            hasRole(MINTER_ROLE, signer),
-            "URI must be signed by mint role"
-        );
+        if (!hasRole(MINTER_ROLE, signer)) {
+            revert RequiresMinterRole();
+        }
 
         _setTokenURI(tokenId, inputTokenURI);
         _setTokenAttribute(tokenId, inputTokenAttribute);

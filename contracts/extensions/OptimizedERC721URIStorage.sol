@@ -5,6 +5,8 @@ pragma solidity ^0.8.24;
 import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {DecodeSegmentedURI} from "./DecodeSegmentedURI.sol";
 
+error TokenDoesNotExist();
+
 /// @custom:security-contact aLANparty@protonmail.com
 abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
     bytes4 internal _baseTokenURIPrefix;
@@ -17,10 +19,9 @@ abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
     function tokenURI(
         uint256 tokenId
     ) public view virtual override returns (string memory) {
-        require(
-            _ownerOf(tokenId) != address(0),
-            "ERC721: URI query for nonexistent token"
-        );
+        if (_ownerOf(tokenId) == address(0)) {
+            revert TokenDoesNotExist();
+        }
 
         bytes32 thisTokenURI = _tokenURIs[tokenId];
         string memory base = _baseTokenURI;
@@ -44,10 +45,9 @@ abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
         uint256 tokenId,
         bytes32 inputTokenURI
     ) internal virtual {
-        require(
-            _ownerOf(tokenId) != address(0),
-            "ERC721: URI query for nonexistent token"
-        );
+        if (_ownerOf(tokenId) == address(0)) {
+            revert TokenDoesNotExist();
+        }
 
         _tokenURIs[tokenId] = inputTokenURI;
     }

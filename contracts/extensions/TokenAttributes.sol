@@ -4,6 +4,14 @@ pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
+error TokenDoesNotExist();
+
+error TokenAttributeDoesNotExist();
+
+error TokenIdCannotBeZero();
+
+error TokenAttributeAlreadyExists();
+
 /// @custom:security-contact aLANparty@protonmail.com
 abstract contract TokenAttributes is ERC721 {
     // Maps token ids to their attributes
@@ -15,10 +23,9 @@ abstract contract TokenAttributes is ERC721 {
     function tokenAttribute(
         uint256 tokenId
     ) public view virtual returns (bytes32) {
-        require(
-            _ownerOf(tokenId) != address(0),
-            "ERC721: URI query for nonexistent token"
-        );
+        if (_ownerOf(tokenId) == address(0)) {
+            revert TokenDoesNotExist();
+        }
 
         return _tokenAttributes[tokenId];
     }
@@ -26,10 +33,9 @@ abstract contract TokenAttributes is ERC721 {
     function tokenAttributeTokenId(
         bytes32 inputTokenAttribute
     ) public view virtual returns (uint256) {
-        require(
-            tokenAttributeExists(inputTokenAttribute),
-            "id query on nonexistent attr"
-        );
+        if (!tokenAttributeExists(inputTokenAttribute)) {
+            revert TokenAttributeDoesNotExist();
+        }
 
         return _tokenAttributesToTokenIds[inputTokenAttribute];
     }
@@ -61,16 +67,18 @@ abstract contract TokenAttributes is ERC721 {
         uint256 tokenId,
         bytes32 inputTokenAttribute
     ) internal virtual {
-        require(
-            _ownerOf(tokenId) != address(0),
-            "ERC721: URI query for nonexistent token"
-        );
+        if (_ownerOf(tokenId) == address(0)) {
+            revert TokenDoesNotExist();
+        }
 
-        require(inputTokenAttribute > 0, "attr can't be 0");
-        require(
-            !tokenAttributeExists(inputTokenAttribute),
-            "attr already in use"
-        );
+        bool validTokenId = inputTokenAttribute > 0;
+        if (!validTokenId) {
+            revert TokenIdCannotBeZero();
+        }
+
+        if (tokenAttributeExists(inputTokenAttribute)) {
+            revert TokenAttributeAlreadyExists();
+        }
 
         _tokenAttributes[tokenId] = inputTokenAttribute;
         _tokenAttributesToTokenIds[inputTokenAttribute] = tokenId;
