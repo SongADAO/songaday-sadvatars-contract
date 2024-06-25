@@ -113,10 +113,6 @@ contract SongADayPFP is
         _setTokenAttribute(tokenId, inputTokenAttribute);
     }
 
-    function _baseURI() internal view virtual override returns (string memory) {
-        return "";
-    }
-
     function _getTokenURIAndAttributeHashSigner(
         address approvedAddress,
         bytes32 inputTokenURI,
@@ -134,6 +130,10 @@ contract SongADayPFP is
         );
 
         return ECDSA.recover(messageHashBytes32, signature);
+    }
+
+    function _baseURI() internal view virtual override returns (string memory) {
+        return "";
     }
 
     // The following functions are overrides required by Solidity.
