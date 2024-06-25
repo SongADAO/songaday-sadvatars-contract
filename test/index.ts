@@ -1,6 +1,7 @@
 import { expect } from "chai";
 import hre, { ethers } from "hardhat";
-// import * as base32 from "hi-base32";
+
+const COVERAGE = process.argv.includes("coverage");
 
 async function getGasSpent(tx: any): Promise<bigint> {
   const receipt = await tx.wait();
@@ -616,26 +617,28 @@ describe("SongADayPFP", function () {
 
       // -----------------------------------------------------------------------
 
-      expect(contractBalance).to.equal(mintBalance);
+      if (COVERAGE === false) {
+        expect(contractBalance).to.equal(mintBalance);
 
-      const gasSpent = await getGasSpent(tx);
+        const gasSpent = await getGasSpent(tx);
 
-      const beneficiaryBalanceAfterWithdraw =
-        await ethers.provider.getBalance(beneficiary);
+        const beneficiaryBalanceAfterWithdraw =
+          await ethers.provider.getBalance(beneficiary);
 
-      const ownerBalanceAfterWithdraw = await ethers.provider.getBalance(owner);
+        const ownerBalanceAfterWithdraw = await ethers.provider.getBalance(owner);
 
-      const contractBalanceAfterWithdraw =
-        await ethers.provider.getBalance(token);
+        const contractBalanceAfterWithdraw =
+          await ethers.provider.getBalance(token);
 
-      expect(beneficiaryBalanceAfterWithdraw).to.equal(
-        beneficiaryBalance + contractBalance,
-      );
-      expect(beneficiaryBalanceAfterWithdraw).to.equal(
-        beneficiaryBalance + mintBalance,
-      );
-      expect(contractBalanceAfterWithdraw).to.equal(0n);
-      expect(ownerBalanceAfterWithdraw).to.equal(ownerBalance - gasSpent);
+        expect(beneficiaryBalanceAfterWithdraw).to.equal(
+          beneficiaryBalance + contractBalance,
+        );
+        expect(beneficiaryBalanceAfterWithdraw).to.equal(
+          beneficiaryBalance + mintBalance,
+        );
+        expect(contractBalanceAfterWithdraw).to.equal(0n);
+        expect(ownerBalanceAfterWithdraw).to.equal(ownerBalance - gasSpent);
+      }
     });
   });
 });
