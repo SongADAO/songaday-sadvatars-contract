@@ -4,7 +4,6 @@ import hre, { ethers } from "hardhat";
 
 async function getGasSpent(tx: any): Promise<bigint> {
   const receipt = await tx.wait();
-  console.log(receipt);
 
   return BigInt(receipt.cumulativeGasUsed * receipt.gasPrice);
 }
