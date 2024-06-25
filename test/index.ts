@@ -520,10 +520,7 @@ describe("SongADayPFP", function () {
 
     //   await expect(
     //     changeTokenURIAndAttribute(bob, 0, mints[1]),
-    //   ).to.be.revertedWithCustomError(
-    //     token,
-    //     "EnforcedPause",
-    //   );
+    //   ).to.be.revertedWithCustomError(token, "EnforcedPause");
     // });
   });
 });
