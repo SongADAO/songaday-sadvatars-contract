@@ -5,6 +5,8 @@ import hre, { ethers } from "hardhat";
 describe("SongADayPFP", function () {
   const minterAddress = process.env.MINTER_ADDRESS || "";
   const minterPrivateKey = process.env.MINTER_PRIVATE_KEY || "";
+  const invalidMinterPrivateKey =
+    "0eace01ed992ed1de38f7cb6da632ba5ad1665c6b3ac86487583f90a991ca33a";
 
   // let token: Contract = null;
   let token: any = null;
@@ -80,7 +82,7 @@ describe("SongADayPFP", function () {
     return ipfsHashBase16Bytes32;
   }
 
-  async function mint(minter: any, params: any) {
+  async function mint(minter: any, params: any, privateKey: string = "") {
     // token URI and Attribute Hash Authorization Signature
     // -------------------------------------------------------------------------
     const tokenURIAndAttributeHash = await token
@@ -91,7 +93,8 @@ describe("SongADayPFP", function () {
         params.tokenAttribute,
       );
 
-    const wallet = new ethers.Wallet(minterPrivateKey);
+    const walletPrivateKey = privateKey || minterPrivateKey;
+    const wallet = new ethers.Wallet(walletPrivateKey);
     const signature: string = await wallet.signMessage(
       ethers.getBytes(tokenURIAndAttributeHash),
     );
@@ -485,6 +488,12 @@ describe("SongADayPFP", function () {
     //   expect(await token.balanceOf(bob.address)).to.equal(2);
     //   expect(await token.balanceOf(sara.address)).to.equal(1);
     // });
+
+    it("correctly prevents minting NFTs with invalid signature", async function () {
+      await expect(
+        mint(bob, mints[0], invalidMinterPrivateKey),
+      ).to.be.revertedWithCustomError(token, "InvalidMinterSignature");
+    });
 
     it("correctly prevents minting NFTs with identical token attributes", async function () {
       await mint(bob, mints[0]);
