@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.24;
 
 /**
  * @dev Operations for decoding a segmented IPFS token uri.
  */
-/// @custom:security-contact alanparty@protonmail.com
+/// @custom:security-contact aLANparty@protonmail.com
 contract DecodeSegmentedURI {
     function _combineURISegments(bytes4 segment1, bytes32 segment2)
         internal
