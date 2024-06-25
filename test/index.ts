@@ -535,4 +535,113 @@ describe("SongADayPFP", function () {
     //   ).to.be.revertedWithCustomError(token, "EnforcedPause");
     // });
   });
+
+  describe.only("Withdraw", function () {
+    it("should set correct beneficiary", async () => {
+      await token.connect(owner).setBeneficiary(bob);
+
+      expect(await token.beneficiary()).to.equal(bob);
+    });
+
+    it("should allow withdraw of funds", async () => {
+      await token.connect(owner).setBeneficiary(bob);
+
+      await token.withdraw();
+    });
+
+    it("should only allow the owner to set the beneficiary", async () => {
+      await expect(
+        token.connect(bob).setBeneficiary(bob),
+      ).to.be.revertedWithCustomError(
+        token,
+        `AccessControlUnauthorizedAccount`,
+      );
+    });
+
+    it("should only allow owner to withdraw funds", async () => {
+      await token.connect(owner).setBeneficiary(bob);
+
+      await expect(token.connect(bob).withdraw()).to.be.revertedWithCustomError(
+        token,
+        `AccessControlUnauthorizedAccount`,
+      );
+    });
+
+    it("should require a beneficiary to withdraw funds", async () => {
+      await token.connect(owner).setBeneficiary(ZeroAddress);
+
+      await expect(token.connect(owner).withdraw()).revertedWithCustomError(
+        token,
+        `BeneficiaryNotSet`,
+      );
+    });
+
+    // it("should properly allocate withdrawn funds", async () => {
+    //   const { sec, owner, otherAccount, thirdAccount, publicClient } =
+    //     await loadFixture(deploySECFixture);
+
+    //   const beneficiary = thirdAccount;
+
+    //   await sec.write.setBeneficiary([beneficiary.account.address]);
+
+    //   // -----------------------------------------------------------------------
+
+    //   await enablePublicSales(sec);
+
+    //   await sec.write.publicSaleMint([3n, BigInt(PUBLIC_SALE_KEY)], {
+    //     account: otherAccount.account.address,
+    //     value: PUBLIC_PRICE_WEI * 3n,
+    //   });
+
+    //   expect(await sec.read.balanceOf([otherAccount.account.address])).to.equal(
+    //     3n
+    //   );
+
+    //   const mintBalance = PUBLIC_PRICE_WEI * 3n;
+
+    //   // -----------------------------------------------------------------------
+
+    //   const beneficiaryBalance = await publicClient.getBalance({
+    //     address: beneficiary.account.address,
+    //   });
+
+    //   const ownerBalance = await publicClient.getBalance({
+    //     address: owner.account.address,
+    //   });
+
+    //   const contractBalance = await publicClient.getBalance({
+    //     address: sec.address,
+    //   });
+
+    //   const hash = await sec.write.withdrawMoney();
+
+    //   // -----------------------------------------------------------------------
+
+    //   expect(contractBalance).to.equal(mintBalance);
+
+    //   const gasSpent = await getGasSpent(hash, publicClient);
+    //   // const gasSpent = 46388559123153n;
+
+    //   const beneficiaryBalanceAfterWithdraw = await publicClient.getBalance({
+    //     address: beneficiary.account.address,
+    //   });
+
+    //   const ownerBalanceAfterWithdraw = await publicClient.getBalance({
+    //     address: owner.account.address,
+    //   });
+
+    //   const contractBalanceAfterWithdraw = await publicClient.getBalance({
+    //     address: sec.address,
+    //   });
+
+    //   expect(beneficiaryBalanceAfterWithdraw).to.equal(
+    //     beneficiaryBalance + contractBalance
+    //   );
+    //   expect(beneficiaryBalanceAfterWithdraw).to.equal(
+    //     beneficiaryBalance + mintBalance
+    //   );
+    //   expect(contractBalanceAfterWithdraw).to.equal(0n);
+    //   expect(ownerBalanceAfterWithdraw).to.equal(ownerBalance - gasSpent);
+    // });
+  });
 });
