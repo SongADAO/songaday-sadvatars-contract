@@ -2,6 +2,13 @@ import { expect } from "chai";
 import hre, { ethers } from "hardhat";
 // import * as base32 from "hi-base32";
 
+async function getGasSpent(tx: any): Promise<bigint> {
+  const receipt = await tx.wait();
+  console.log(receipt);
+
+  return BigInt(receipt.cumulativeGasUsed * receipt.gasPrice);
+}
+
 describe("SongADayPFP", function () {
   const minterAddress = process.env.MINTER_ADDRESS || "";
   const minterPrivateKey = process.env.MINTER_PRIVATE_KEY || "";
@@ -82,7 +89,12 @@ describe("SongADayPFP", function () {
     return ipfsHashBase16Bytes32;
   }
 
-  async function mint(minter: any, params: any, privateKey: string = "") {
+  async function mint(
+    minter: any,
+    params: any,
+    value: any = 0n,
+    privateKey: string = "",
+  ) {
     // token URI and Attribute Hash Authorization Signature
     // -------------------------------------------------------------------------
     const tokenURIAndAttributeHash = await token
@@ -108,6 +120,9 @@ describe("SongADayPFP", function () {
         ipfsBase16ToBytes32(params.ipfsHashBase16),
         params.tokenAttribute,
         signature,
+        {
+          value,
+        },
       );
   }
 
@@ -491,7 +506,7 @@ describe("SongADayPFP", function () {
 
     it("correctly prevents minting NFTs with invalid signature", async function () {
       await expect(
-        mint(bob, mints[0], invalidMinterPrivateKey),
+        mint(bob, mints[0], 0n, invalidMinterPrivateKey),
       ).to.be.revertedWithCustomError(token, "InvalidMinterSignature");
     });
 
@@ -577,72 +592,51 @@ describe("SongADayPFP", function () {
       ).revertedWithCustomError(token, `BeneficiaryNotSet`);
     });
 
-    // it("should properly allocate withdrawn funds", async () => {
-    //   const { sec, owner, otherAccount, thirdAccount, publicClient } =
-    //     await loadFixture(deploySECFixture);
+    it("should properly allocate withdrawn funds", async () => {
+      const beneficiary = bob;
 
-    //   const beneficiary = thirdAccount;
+      await token.connect(owner).setBeneficiary(beneficiary);
 
-    //   await sec.write.setBeneficiary([beneficiary.account.address]);
+      // -----------------------------------------------------------------------
 
-    //   // -----------------------------------------------------------------------
+      await mint(bob, mints[0], 100000000000000000n);
 
-    //   await enablePublicSales(sec);
+      expect(await token.balanceOf(bob)).to.equal(1);
 
-    //   await sec.write.publicSaleMint([3n, BigInt(PUBLIC_SALE_KEY)], {
-    //     account: otherAccount.account.address,
-    //     value: PUBLIC_PRICE_WEI * 3n,
-    //   });
+      const mintBalance = 100000000000000000n;
 
-    //   expect(await sec.read.balanceOf([otherAccount.account.address])).to.equal(
-    //     3n
-    //   );
+      // -----------------------------------------------------------------------
 
-    //   const mintBalance = PUBLIC_PRICE_WEI * 3n;
+      const beneficiaryBalance = await ethers.provider.getBalance(beneficiary);
 
-    //   // -----------------------------------------------------------------------
+      const ownerBalance = await ethers.provider.getBalance(owner);
 
-    //   const beneficiaryBalance = await publicClient.getBalance({
-    //     address: beneficiary.account.address,
-    //   });
+      const contractBalance = await ethers.provider.getBalance(token);
 
-    //   const ownerBalance = await publicClient.getBalance({
-    //     address: owner.account.address,
-    //   });
+      const tx = await token.connect(owner).withdrawMoney();
 
-    //   const contractBalance = await publicClient.getBalance({
-    //     address: sec.address,
-    //   });
+      // -----------------------------------------------------------------------
 
-    //   const hash = await sec.write.withdrawMoney();
+      expect(contractBalance).to.equal(mintBalance);
 
-    //   // -----------------------------------------------------------------------
+      const gasSpent = await getGasSpent(tx);
 
-    //   expect(contractBalance).to.equal(mintBalance);
+      const beneficiaryBalanceAfterWithdraw =
+        await ethers.provider.getBalance(beneficiary);
 
-    //   const gasSpent = await getGasSpent(hash, publicClient);
-    //   // const gasSpent = 46388559123153n;
+      const ownerBalanceAfterWithdraw = await ethers.provider.getBalance(owner);
 
-    //   const beneficiaryBalanceAfterWithdraw = await publicClient.getBalance({
-    //     address: beneficiary.account.address,
-    //   });
+      const contractBalanceAfterWithdraw =
+        await ethers.provider.getBalance(token);
 
-    //   const ownerBalanceAfterWithdraw = await publicClient.getBalance({
-    //     address: owner.account.address,
-    //   });
-
-    //   const contractBalanceAfterWithdraw = await publicClient.getBalance({
-    //     address: sec.address,
-    //   });
-
-    //   expect(beneficiaryBalanceAfterWithdraw).to.equal(
-    //     beneficiaryBalance + contractBalance
-    //   );
-    //   expect(beneficiaryBalanceAfterWithdraw).to.equal(
-    //     beneficiaryBalance + mintBalance
-    //   );
-    //   expect(contractBalanceAfterWithdraw).to.equal(0n);
-    //   expect(ownerBalanceAfterWithdraw).to.equal(ownerBalance - gasSpent);
-    // });
+      expect(beneficiaryBalanceAfterWithdraw).to.equal(
+        beneficiaryBalance + contractBalance,
+      );
+      expect(beneficiaryBalanceAfterWithdraw).to.equal(
+        beneficiaryBalance + mintBalance,
+      );
+      expect(contractBalanceAfterWithdraw).to.equal(0n);
+      expect(ownerBalanceAfterWithdraw).to.equal(ownerBalance - gasSpent);
+    });
   });
 });
