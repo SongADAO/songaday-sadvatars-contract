@@ -2,8 +2,8 @@
 // Compatible with OpenZeppelin Contracts ^5.0.0
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
-import "./DecodeSegmentedURI.sol";
+import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import {DecodeSegmentedURI} from "./DecodeSegmentedURI.sol";
 
 /// @custom:security-contact aLANparty@protonmail.com
 abstract contract OptimizedERC721URIStorage is ERC721, DecodeSegmentedURI {
