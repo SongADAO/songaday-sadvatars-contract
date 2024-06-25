@@ -536,7 +536,7 @@ describe("SongADayPFP", function () {
     // });
   });
 
-  describe.only("Withdraw", function () {
+  describe("Withdraw", function () {
     it("should set correct beneficiary", async () => {
       await token.connect(owner).setBeneficiary(bob);
 
@@ -546,7 +546,7 @@ describe("SongADayPFP", function () {
     it("should allow withdraw of funds", async () => {
       await token.connect(owner).setBeneficiary(bob);
 
-      await token.withdraw();
+      await token.withdrawMoney();
     });
 
     it("should only allow the owner to set the beneficiary", async () => {
@@ -561,7 +561,9 @@ describe("SongADayPFP", function () {
     it("should only allow owner to withdraw funds", async () => {
       await token.connect(owner).setBeneficiary(bob);
 
-      await expect(token.connect(bob).withdraw()).to.be.revertedWithCustomError(
+      await expect(
+        token.connect(bob).withdrawMoney(),
+      ).to.be.revertedWithCustomError(
         token,
         `AccessControlUnauthorizedAccount`,
       );
@@ -570,10 +572,9 @@ describe("SongADayPFP", function () {
     it("should require a beneficiary to withdraw funds", async () => {
       await token.connect(owner).setBeneficiary(ZeroAddress);
 
-      await expect(token.connect(owner).withdraw()).revertedWithCustomError(
-        token,
-        `BeneficiaryNotSet`,
-      );
+      await expect(
+        token.connect(owner).withdrawMoney(),
+      ).revertedWithCustomError(token, `BeneficiaryNotSet`);
     });
 
     // it("should properly allocate withdrawn funds", async () => {

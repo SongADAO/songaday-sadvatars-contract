@@ -52,7 +52,7 @@ contract SongADayPFP is
         _grantRole(MINTER_ROLE, minter);
     }
 
-    function withdraw() external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function withdrawMoney() external onlyRole(DEFAULT_ADMIN_ROLE) {
         if (beneficiary == address(0)) {
             revert BeneficiaryNotSet();
         }
