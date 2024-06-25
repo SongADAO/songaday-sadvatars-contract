@@ -267,7 +267,10 @@ describe("SongADayPFP", function () {
       await mint(bob, mints[0]);
       expect(await token.connect(bob).burn(0)).to.emit(token, "Transfer");
       expect(await token.balanceOf(bob.address)).to.equal(0);
-      await expect(token.ownerOf(0)).to.be.reverted;
+      await expect(token.ownerOf(0)).to.be.revertedWithCustomError(
+        token,
+        "ERC721NonexistentToken",
+      );
     });
   });
 
@@ -438,7 +441,7 @@ describe("SongADayPFP", function () {
 
     //   await expect(
     //     changeTokenURIAndAttribute(bob, 1, mints[1]),
-    //   ).to.be.revertedWith("URI set of nonexistent token");
+    //   ).to.be.revertedWithCustomError(token, "ERC721NonexistentToken");
     // });
 
     // it("correctly prevents altering metadata URI and attributes for unowned tokens", async function () {
@@ -452,7 +455,7 @@ describe("SongADayPFP", function () {
 
     //   await expect(
     //     changeTokenURIAndAttribute(sara, 0, mints[1]),
-    //   ).to.be.revertedWith("URI set of unowned token");
+    //   ).to.be.revertedWithCustomError(token, "ERC721NonexistentToken");
     // });
   });
 
