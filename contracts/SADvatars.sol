@@ -84,7 +84,7 @@ contract SADvatars is
         }
 
         // solhint-disable quotes
-        return 'data:application/json;utf8,{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars"}';
+        return 'data:application/json;utf8,{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars", "collaborators": ["0x2a2C412c440Dfb0E7cae46EFF581e3E26aFd1Cd0"]}';
     }
 
     function setBaseTokenURIPrefix(
