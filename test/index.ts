@@ -9,7 +9,7 @@ async function getGasSpent(tx: any): Promise<bigint> {
   return BigInt(receipt.cumulativeGasUsed * receipt.gasPrice);
 }
 
-describe("SongADayPFP", function () {
+describe("SADvatars", function () {
   const minterAddress = "0x633f74dBEAF851411be51E116019CAA6342257Ab";
 
   const minterPrivateKey =
@@ -35,11 +35,11 @@ describe("SongADayPFP", function () {
 
   const ZeroAddress: string = "0x0000000000000000000000000000000000000000";
 
-  const contractName: string = "SongADayPFP";
+  const contractName: string = "SADvatars";
 
-  const tokenName: string = "SongADayPFP";
+  const tokenName: string = "SADvatars";
 
-  const tokenSymbol: string = "SONGADAYPFP";
+  const tokenSymbol: string = "SADVATARS";
 
   const baseTokenURI: string = "ipfs://b";
 

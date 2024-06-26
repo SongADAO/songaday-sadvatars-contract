@@ -1,4 +1,4 @@
-# SongADay PFP Builder Contract
+# SADvatars Contract
 
 This is a solidity ERC721 contract designed to be used with the SongADay PFP Builder.
 

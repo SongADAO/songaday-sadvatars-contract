@@ -20,8 +20,8 @@ error DonationTransferFailed();
 error BeneficiaryNotSet();
 
 /// @custom:security-contact aLANparty@protonmail.com
-// contract SongADayPFP is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
-contract SongADayPFP is
+// contract SADvatars is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
+contract SADvatars is
     ERC721,
     ERC721Enumerable,
     ERC721Pausable,
@@ -43,7 +43,7 @@ contract SongADayPFP is
         address defaultAdmin,
         address pauser,
         address minter
-    ) ERC721("SongADayPFP", "SONGADAYPFP") {
+    ) ERC721("SADvatars", "SADVATARS") {
         _baseTokenURI = baseTokenURI;
         _baseTokenURIPrefix = baseTokenURIPrefix;
         beneficiary = initialBeneficiary;
