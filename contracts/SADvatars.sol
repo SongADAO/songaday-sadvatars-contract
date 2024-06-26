@@ -36,6 +36,8 @@ contract SADvatars is
 
     address public beneficiary;
 
+    string _contractURI = ""
+
     constructor(
         string memory baseTokenURI,
         bytes4 baseTokenURIPrefix,
@@ -61,6 +63,21 @@ contract SADvatars is
         if (!success) {
             revert DonationTransferFailed();
         }
+    }
+
+    function setContractURI(string memory newURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+        _contractURI = newURI;
+        emit ContractURIUpdated();
+    }
+
+    function contractURI() public pure returns (string memory) {
+        if (_contractURI != "") {
+            return _contractURI;
+        }
+
+        // solhint-disable quotes
+        string memory json = '{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars"}';
+        return string.concat("data:application/json;utf8,", json);
     }
 
     function setBaseTokenURIPrefix(
