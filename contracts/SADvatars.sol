@@ -37,7 +37,7 @@ contract SADvatars is
 {
     bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
-    uint256 private _nextTokenId;
+    uint256 private _nextTokenId = 1;
 
     address public beneficiary;
 
