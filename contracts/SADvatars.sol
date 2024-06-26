@@ -198,6 +198,15 @@ contract SADvatars is
         super._increaseBalance(account, value);
     }
 
+    // function tokenURI(uint256 tokenId)
+    //     public
+    //     view
+    //     override(ERC721, ERC721URIStorage)
+    //     returns (string memory)
+    // {
+    //     return super.tokenURI(tokenId);
+    // }
+
     function tokenURI(
         uint256 tokenId
     )
@@ -208,15 +217,6 @@ contract SADvatars is
     {
         return super.tokenURI(tokenId);
     }
-
-    // function tokenURI(uint256 tokenId)
-    //     public
-    //     view
-    //     override(ERC721, ERC721URIStorage)
-    //     returns (string memory)
-    // {
-    //     return super.tokenURI(tokenId);
-    // }
 
     function supportsInterface(
         bytes4 interfaceId
