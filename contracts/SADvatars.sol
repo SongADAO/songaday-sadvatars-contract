@@ -78,14 +78,13 @@ contract SADvatars is
     }
 
     function contractURI() external view returns (string memory) {
-        bytes memory contractURIBytes = bytes(_contractURI);
-        if (contractURIBytes.length != 0) {
+        if (bytes(_contractURI).length != 0) {
             return _contractURI;
         }
 
         return
             // solhint-disable-next-line quotes
-            'data:application/json;utf8,{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars", "collaborators": ["0x2a2C412c440Dfb0E7cae46EFF581e3E26aFd1Cd0"]}';
+            'data:application/json;utf8,{"name": "SADvatars", "description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars", "collaborators": ["0x2a2C412c440Dfb0E7cae46EFF581e3E26aFd1Cd0"]}';
     }
 
     function setBaseTokenURIPrefix(
