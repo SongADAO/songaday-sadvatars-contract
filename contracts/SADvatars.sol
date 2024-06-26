@@ -8,7 +8,6 @@ import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import {ERC721Burnable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 import {ERC721Enumerable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Enumerable.sol";
 import {ERC721Pausable} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721Pausable.sol";
-// import {ERC721URIStorage} from "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import {MessageHashUtils} from "@openzeppelin/contracts/utils/cryptography/MessageHashUtils.sol";
 import {OptimizedERC721URIStorage} from "./extensions/OptimizedERC721URIStorage.sol";
 import {TokenAttributes} from "./extensions/TokenAttributes.sol";
@@ -20,13 +19,12 @@ error DonationTransferFailed();
 error BeneficiaryNotSet();
 
 interface IERC7572 {
-  event ContractURIUpdated();
+    event ContractURIUpdated();
 
-  function contractURI() external view returns (string memory);
+    function contractURI() external view returns (string memory);
 }
 
 /// @custom:security-contact aLANparty@protonmail.com
-// contract SADvatars is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
 contract SADvatars is
     ERC721,
     ERC721Enumerable,
@@ -72,7 +70,9 @@ contract SADvatars is
         }
     }
 
-    function setContractURI(string memory newURI) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function setContractURI(
+        string memory newURI
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
         _contractURI = newURI;
         emit ContractURIUpdated();
     }
@@ -84,7 +84,8 @@ contract SADvatars is
         }
 
         // solhint-disable quotes
-        return 'data:application/json;utf8,{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars", "collaborators": ["0x2a2C412c440Dfb0E7cae46EFF581e3E26aFd1Cd0"]}';
+        return
+            'data:application/json;utf8,{"name": "SADvatars","description":"Song a Day Avatars", "image": "https://songaday.world/sadvatars/image.png", "banner_image": "https://songaday.world/sadvatars/banner-image.png", "featured_image": "https://songaday.world/sadvatars/featured-image.png", "external_link": "https://songaday.world/sadvatars", "collaborators": ["0x2a2C412c440Dfb0E7cae46EFF581e3E26aFd1Cd0"]}';
     }
 
     function setBaseTokenURIPrefix(
@@ -118,7 +119,7 @@ contract SADvatars is
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
-    ) public virtual payable whenNotPaused {
+    ) public payable virtual whenNotPaused {
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(to, tokenId);
@@ -197,15 +198,6 @@ contract SADvatars is
     ) internal override(ERC721, ERC721Enumerable) {
         super._increaseBalance(account, value);
     }
-
-    // function tokenURI(uint256 tokenId)
-    //     public
-    //     view
-    //     override(ERC721, ERC721URIStorage)
-    //     returns (string memory)
-    // {
-    //     return super.tokenURI(tokenId);
-    // }
 
     function tokenURI(
         uint256 tokenId
