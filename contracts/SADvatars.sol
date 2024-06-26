@@ -119,7 +119,7 @@ contract SADvatars is
         bytes32 inputTokenURI,
         bytes32 inputTokenAttribute,
         bytes calldata signature
-    ) public payable virtual whenNotPaused returns (uint256) {
+    ) public payable virtual whenNotPaused {
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(to, tokenId);
@@ -131,8 +131,6 @@ contract SADvatars is
             inputTokenAttribute,
             signature
         );
-
-        return tokenId;
     }
 
     function _setTokenURIAndAttribute(
