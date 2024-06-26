@@ -13,7 +13,7 @@ async function main() {
   );
   await token.waitForDeployment();
 
-  console.log(`Wrapper contract deployed to ${await token.getAddress()}`);
+  console.log(`SADvatars contract deployed to ${await token.getAddress()}`);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
