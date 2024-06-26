@@ -123,6 +123,7 @@ contract SADvatars is
         uint256 tokenId = _nextTokenId++;
 
         _safeMint(to, tokenId);
+
         _setTokenURIAndAttribute(
             tokenId,
             to,
