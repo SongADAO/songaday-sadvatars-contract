@@ -19,6 +19,12 @@ error DonationTransferFailed();
 
 error BeneficiaryNotSet();
 
+interface IERC7572 {
+  event ContractURIUpdated();
+
+  function contractURI() external view returns (string memory);
+}
+
 /// @custom:security-contact aLANparty@protonmail.com
 // contract SADvatars is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, AccessControl, ERC721Burnable, TokenAttributes {
 contract SADvatars is
@@ -27,6 +33,7 @@ contract SADvatars is
     ERC721Pausable,
     AccessControl,
     ERC721Burnable,
+    IERC7572,
     TokenAttributes,
     OptimizedERC721URIStorage
 {
@@ -36,7 +43,7 @@ contract SADvatars is
 
     address public beneficiary;
 
-    string _contractURI = ""
+    string private _contractURI = "";
 
     constructor(
         string memory baseTokenURI,
@@ -70,8 +77,9 @@ contract SADvatars is
         emit ContractURIUpdated();
     }
 
-    function contractURI() public pure returns (string memory) {
-        if (_contractURI != "") {
+    function contractURI() external view returns (string memory) {
+        bytes memory contractURIBytes = bytes(_contractURI);
+        if (contractURIBytes.length != 0) {
             return _contractURI;
         }
 
